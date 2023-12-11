@@ -20,11 +20,17 @@ const classExample = await fetchApi(selectedClassUrl);
 const monsterUrl = "https://www.dnd5eapi.co/api/monsters/acolyte";
 
 const monsterExample = await fetchApi(monsterUrl);
+
+const equipmentSubCategory = "https://www.dnd5eapi.co/api/equipment-categories";
+
+const equipmentSubCategoryExample = await fetchApi(equipmentSubCategory);
+
 console.log(indexExample);
-console.log(classExample);
+console.log(classExample);  
 console.log(monsterExample);
+console.log(equipmentSubCategoryExample);
 
 /*
- *Alle funksjoner skal ta inn eksempelobject som parameter.
+ *Alle funksjoner skal ta inn ett av eksemplene som parameter.
  *kodestruktur: fetchMonsters(monsterExample)
  */
