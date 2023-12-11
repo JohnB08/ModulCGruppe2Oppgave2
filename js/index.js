@@ -27,5 +27,5 @@ console.log(monsterExample);
 
 /*
  *Alle funksjoner skal ta inn ett av eksemplene som parameter.
- *kodestruktur: fetchMonsters(monsterExample)
+ *kodestruktur: const fetchMonsters = (monsterExample) => {}
  */
