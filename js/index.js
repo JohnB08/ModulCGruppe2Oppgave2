@@ -13,16 +13,16 @@ const apiIndex = "https://www.dnd5eapi.co/api";
 
 const indexExample = await fetchApi(apiIndex);
 
-const selectedClassUrl = "https://www.dnd5eapi.co/api/monsters";
+const allMonstersUrl = "https://www.dnd5eapi.co/api/monsters";
 
-const classExample = await fetchApi(selectedClassUrl);
+const allMonstersExample = await fetchApi(allMonstersUrl);
 
 const monsterUrl = "https://www.dnd5eapi.co/api/monsters/acolyte";
 
 const monsterExample = await fetchApi(monsterUrl);
 
 console.log(indexExample);
-console.log(classExample);
+console.log(allMonstersExample);
 console.log(monsterExample);
 
 /*
