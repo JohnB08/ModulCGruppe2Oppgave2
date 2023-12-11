@@ -5,6 +5,10 @@ const fetchApi = async (url) => {
   const result = await response.json();
   return result;
 };
+
+/* Dette er apiurlen vi legger alle andre url til inni objektet. */
+const apiURL = "https://www.dnd5eapi.co";
+
 const apiIndex = "https://www.dnd5eapi.co/api";
 
 const indexExample = await fetchApi(apiIndex);
