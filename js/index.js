@@ -60,6 +60,8 @@ const makeElements = (type, parameters) => {
 };
 /* For å lage en brukervennlig navbar må index fra API struktureres litt annerledes. */
 
+/* NAVBAR START*/
+
 /**
  * Lager et nytt object basert på API, strukturert så navBar i topp får fem knapper med hver sin undermeny.
  * er mye mer leslig en det orginale objektet.
@@ -129,7 +131,6 @@ const fetchNavBarObject = async () => {
 };
 
 const navBarObject = await fetchNavBarObject();
-
 const headerElement = makeElements("header", { className: "navBar navDark" });
 const logoContainer = makeElements("div", { className: "logoContainer" });
 const logo = makeElements("img", { src: "./img/logo.svg" });
@@ -147,3 +148,6 @@ Object.keys(navBarObject).forEach((category) => {
 headerElement.appendChild(navBtnContainer);
 document.body.appendChild(headerElement);
 console.log(navBarObject);
+
+
+/* NAVBAR START */
