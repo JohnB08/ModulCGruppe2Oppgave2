@@ -25,7 +25,6 @@ const cardImgContainer = document.querySelector(".card-img");
 
 const cardTextContainer = document.querySelector(".monster-stats")
 
-console.log(indexExample);
 /* console.log(indexExample); */
 console.log(allMonstersExample);
 console.log(monsterExample);
