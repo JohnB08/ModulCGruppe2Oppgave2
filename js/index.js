@@ -27,5 +27,20 @@ console.log(monsterExample);
 
 /*
  *Alle funksjoner skal ta inn ett av eksemplene som parameter.
- *kodestruktur: const fetchMonsters = (monsterExample) => {}
+ *Dette gjøres ved å si først til funksjonen din når du lager den, at du vil ha et parameter
+ *kodestruktur: const fetchMonsters = (parameterObject) => {
+ *Så bruker du parameteret inni funksjonen
+ *   console.log(parameterObject)
+ *
+ * }
+ *
+ * Når du caller på (kjører) funksjonen senere, så legger du eksempelobjektet inn i funksjonen.
+ *
+ * fetchMonsters(monsterExample)
+ *
+ *Da vil funksjonen erstatte parameterObject med monsterExample i koden du har, og kjøre koden din med monsterExample.
+ *
+ * I eksempelet over ender du opp med at monsterExample blir consol logget.
+ *
+ *
  */
