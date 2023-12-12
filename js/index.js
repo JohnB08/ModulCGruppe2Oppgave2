@@ -45,7 +45,14 @@ console.log(monsterExample);
  *
  */
 
-//Jeg må sortere data fra index til noe mer brukbart hvor jeg kan lage knapper og undermenyer.
+/* For å lage en brukervennlig navbar må index fra API struktureres litt annerledes. */
+
+/**
+ * Lager et nytt object basert på API, strukturert så navBar i topp får fem knapper med hver sin undermeny.
+ * er mye mer leslig en det orginale objektet.
+ * @param {*} object tar inn indexen til API
+ * @returns ferdig strukturert object.
+ */
 const makeNavBarObject = async (object) => {
   const navBarObject = {};
   navBarObject.generalRules = {
@@ -85,6 +92,12 @@ const makeNavBarObject = async (object) => {
   return navBarObject;
 };
 
+/**
+ * ser om navbar allerede er lagret i localStorage, så siden slipper å gjøre en ny API call.
+ * Siden navbar er ganske statisk føler jeg dette er en god måte å gjøre det på. det gjør at
+ * etter første siteload blir navbaren en mindre belastning på api.
+ * @returns
+ */
 const fetchNavBarObject = async () => {
   let navBarObject = JSON.parse(localStorage.getItem("dndNavBarObject")) || 0;
   if (navBarObject === 0) {
