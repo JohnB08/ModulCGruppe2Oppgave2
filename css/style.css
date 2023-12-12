@@ -51,6 +51,7 @@ body {
 .navBtnContainer {
   width: 40%;
   display: flex;
+  padding: 10px;
   justify-content: space-around;
 }
 
@@ -59,10 +60,41 @@ body {
   border: none;
   text-decoration: underline;
   transition: 250ms;
+  position: relative;
 }
 
 .navBarBtn:hover {
   cursor: pointer;
   transform: scale(110%);
   color: var(--accent);
+}
+
+.subMenu {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  padding: 10px 20px;
+  gap: 10px;
+  opacity: 0;
+  animation: 500ms ease-in-out reverse dropDown;
+  animation-fill-mode: forwards;
+}
+@keyframes dropDown {
+  0% {
+    opacity: 100%;
+  }
+}
+
+.subMenuBtn {
+  position: absolute;
+  opacity: 0;
+  animation: 25ms ease-in-out reverse btnDropDown;
+  animation-fill-mode: forwards;
+}
+
+@keyframes btnDropDown {
+  0% {
+    position: static;
+    opacity: 100%;
+  }
 }
