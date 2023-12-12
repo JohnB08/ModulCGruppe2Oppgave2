@@ -21,6 +21,7 @@ body {
 .info-card {
   place-self: center;
   grid-area: "info";
+  /*IKKE GJØR SOM JOHN SIER*/
 }
 
 .darkMode {
