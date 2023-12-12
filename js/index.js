@@ -143,7 +143,7 @@ headerElement.appendChild(logoContainer);
 const navBtnContainer = makeElements("div", { className: "navBtnContainer" });
 Object.keys(navBarObject).forEach((category) => {
   const btn = makeElements("div", {
-    className: "navBarBtn",
+    className: "btnTextOnly navBarBtn",
     innerText: navBarObject[category].name,
     id: category,
   });
@@ -174,7 +174,7 @@ const subMenuGenerator = (event, category) => {
     const subMenu = makeElements("div", { className: "subMenu navDark" });
     Object.keys(navBarObject[category]).forEach((subCat) => {
       const btn = makeElements("button", {
-        className: "navBarBtn subMenuBtn",
+        className: "btnTextOnly subMenuBtn",
         innerText: subCat,
         id: subCat,
       });
