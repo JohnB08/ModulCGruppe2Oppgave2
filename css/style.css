@@ -75,7 +75,7 @@ body {
 }
 
 .navBtnContainer {
-  width: 60%;
+  width: 55%;
   display: flex;
   padding: 10px;
   justify-content: space-around;
@@ -109,7 +109,7 @@ body {
   flex-direction: column;
   justify-content: center;
   width: 10rem;
-  padding: 10px 20px;
+  padding: 10px 0;
   gap: 10px;
   opacity: 0;
   animation: 500ms ease-in-out reverse dropDown;
