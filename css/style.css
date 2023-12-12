@@ -14,13 +14,37 @@ body {
   display: grid;
   grid-template-areas:
     "nav nav nav nav"
-    "* info info * "
-    "* info info * ";
+    ". info info . ";
+  grid-template-rows: 6rem 1fr;
   height: 100vh;
 }
+
+/* TEXT CLASSER */
+
+.headerText {
+  font: bold 48px/50px "Open Sans", sans-serif;
+}
+
+.subHeaderText {
+  font: bold 24px/28px "Open Sans", sans-serif;
+}
+.btnText {
+  font: bold 16px/24px "Open Sans", sans-serif;
+}
+
+.descriptionText {
+  font: 24px/28px "Open Sans", sans-serif;
+}
+
+.btnTextNoBold {
+  font: 16px/24px "Open Sans", sans-serif;
+}
+
+/* -------- */
+
 .info-card {
+  grid-area: info;
   place-self: center;
-  grid-area: "info";
   /*IKKE GJØR SOM JOHN SIER*/
 }
 
@@ -36,12 +60,11 @@ body {
 }
 
 .navBar {
+  grid-area: nav;
   display: flex;
   width: 100vw;
-  height: 100px;
   justify-content: space-around;
   align-items: center;
-  grid-area: "nav";
 }
 
 .logoContainer {
@@ -73,6 +96,11 @@ body {
   cursor: pointer;
   transform: scale(110%);
   color: var(--accent);
+}
+
+.sideBorders {
+  border-left: 4px solid var(--accent);
+  border-right: 4px solid var(--accent);
 }
 
 .subMenu {
