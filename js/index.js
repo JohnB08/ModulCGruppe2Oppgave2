@@ -11,7 +11,7 @@ const apiURL = "https://www.dnd5eapi.co";
 
 const apiIndex = "https://www.dnd5eapi.co/api";
 
-const indexExample = await fetchApi(apiIndex);
+/* const indexExample = await fetchApi(apiIndex); */
 
 const allMonstersUrl = "https://www.dnd5eapi.co/api/monsters";
 
@@ -21,7 +21,7 @@ const monsterUrl = "https://www.dnd5eapi.co/api/monsters/acolyte";
 
 const monsterExample = await fetchApi(monsterUrl);
 
-console.log(indexExample);
+/* console.log(indexExample); */
 console.log(allMonstersExample);
 console.log(monsterExample);
 
@@ -44,3 +44,57 @@ console.log(monsterExample);
  *
  *
  */
+
+//Jeg må sortere data fra index til noe mer brukbart hvor jeg kan lage knapper og undermenyer.
+const makeNavBarObject = async (object) => {
+  const navBarObject = {};
+  navBarObject.generalRules = {
+    abilityScores: object["ability-scores"],
+    feats: object["feats"],
+    conditions: object["conditions"],
+    features: object["features"],
+    damageTypes: object["damage-types"],
+    proficiencies: object["proficiencies"],
+    traits: object["traits"],
+    magicSchools: object["magic-schools"],
+    backgrounds: object["backgrounds"],
+    alignments: object["alignments"],
+    rules: object["rules"],
+  };
+  navBarObject.classes = {};
+  navBarObject.classes.allClasses = object["classes"];
+  let fetchClasses = await fetchApi(`${apiURL}${object["classes"]}`);
+  console.log(fetchClasses.results);
+  for (let classID of fetchClasses.results) {
+    navBarObject.classes[classID.index] = classID;
+  }
+  navBarObject.races = {};
+  navBarObject.races.allRaces = object["races"];
+  let fetchRaces = await fetchApi(`${apiURL}${object["races"]}`);
+  for (let race of fetchRaces.results) {
+    navBarObject.races[race.index] = race;
+  }
+  navBarObject.equipment = {
+    categories: object["equipment-categories"],
+    normalEquipment: object["equipment"],
+    magicEquipment: object["magic-equipment"],
+  };
+  navBarObject.monsters = {
+    allMonsters: object["monsters"],
+  };
+  return navBarObject;
+};
+
+const fetchNavBarObject = async () => {
+  let navBarObject = JSON.parse(localStorage.getItem("navBarObject")) || 0;
+  if (navBarObject === 0) {
+    const index = await fetchApi(apiIndex);
+    navBarObject = await makeNavBarObject(index);
+    localStorage.setItem("navBarObject", JSON.stringify(navBarObject));
+  }
+  return navBarObject;
+};
+
+const navBarObject = await fetchNavBarObject();
+
+console.log(navBarObject);
