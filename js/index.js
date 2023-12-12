@@ -86,11 +86,11 @@ const makeNavBarObject = async (object) => {
 };
 
 const fetchNavBarObject = async () => {
-  let navBarObject = JSON.parse(localStorage.getItem("navBarObject")) || 0;
+  let navBarObject = JSON.parse(localStorage.getItem("dndNavBarObject")) || 0;
   if (navBarObject === 0) {
     const index = await fetchApi(apiIndex);
     navBarObject = await makeNavBarObject(index);
-    localStorage.setItem("navBarObject", JSON.stringify(navBarObject));
+    localStorage.setItem("dndNavBarObject", JSON.stringify(navBarObject));
   }
   return navBarObject;
 };
