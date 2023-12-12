@@ -146,8 +146,7 @@ Object.keys(navBarObject).forEach((category) => {
   navBtnContainer.appendChild(btn);
 });
 headerElement.appendChild(navBtnContainer);
-document.body.appendChild(headerElement);
+document.body.prepend(headerElement);
 console.log(navBarObject);
-
 
 /* NAVBAR START */
