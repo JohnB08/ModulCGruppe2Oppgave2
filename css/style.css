@@ -1,3 +1,4 @@
+
 :root {
   --light: #f6f7eb;
   --dark: #2f3437;
@@ -9,6 +10,16 @@
   padding: 0;
   box-sizing: border-box;
 }
+
+body{
+    display: grid;
+    place-content: center;
+    height: 100vh;
+}
+/* .info-card{ */
+/* ikkje gjør som john seie */
+/* } */
+
 .darkMode {
   background-color: var(--dark);
   color: var(--light);
