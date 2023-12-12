@@ -45,6 +45,19 @@ console.log(monsterExample);
  *
  */
 
+/**
+ * Funksjon som lager html element
+ * @param {*} type hvilken type element du vil ha, string. f.eks "div"
+ * @param {*} parameters hvilke parametere du vil gi elementet, f.eks {classname: "container"}
+ */
+const makeElements = (type, parameters) => {
+  const element = document.createElement(type);
+  Object.entries(parameters).forEach((entry) => {
+    let [propertyKey, propertyValue] = entry;
+    element[propertyKey] = propertyValue;
+  });
+  return element;
+};
 /* For å lage en brukervennlig navbar må index fra API struktureres litt annerledes. */
 
 /**
@@ -67,26 +80,33 @@ const makeNavBarObject = async (object) => {
     backgrounds: object["backgrounds"],
     alignments: object["alignments"],
     rules: object["rules"],
+    name: "General Rules",
   };
-  navBarObject.classes = {};
-  navBarObject.classes.allClasses = object["classes"];
+  navBarObject.classes = {
+    name: "Classes",
+    allClasses: object["classes"],
+  };
   let fetchClasses = await fetchApi(`${apiURL}${object["classes"]}`);
   console.log(fetchClasses.results);
   for (let classID of fetchClasses.results) {
     navBarObject.classes[classID.index] = classID;
   }
-  navBarObject.races = {};
-  navBarObject.races.allRaces = object["races"];
+  navBarObject.races = {
+    name: "Races",
+    allRaces: object["races"],
+  };
   let fetchRaces = await fetchApi(`${apiURL}${object["races"]}`);
   for (let race of fetchRaces.results) {
     navBarObject.races[race.index] = race;
   }
   navBarObject.equipment = {
+    name: "Equipment",
     categories: object["equipment-categories"],
     normalEquipment: object["equipment"],
     magicEquipment: object["magic-equipment"],
   };
   navBarObject.monsters = {
+    name: "Monsters",
     allMonsters: object["monsters"],
   };
   return navBarObject;
@@ -110,4 +130,20 @@ const fetchNavBarObject = async () => {
 
 const navBarObject = await fetchNavBarObject();
 
+const headerElement = makeElements("header", { className: "navBar navDark" });
+const logoContainer = makeElements("div", { className: "logoContainer" });
+const logo = makeElements("img", { src: "./img/logo.svg" });
+logoContainer.appendChild(logo);
+headerElement.appendChild(logoContainer);
+const navBtnContainer = makeElements("div", { className: "navBtnContainer" });
+Object.keys(navBarObject).forEach((category) => {
+  const btn = makeElements("button", {
+    className: "navBarBtn",
+    innerText: navBarObject[category].name,
+    id: category,
+  });
+  navBtnContainer.appendChild(btn);
+});
+headerElement.appendChild(navBtnContainer);
+document.body.appendChild(headerElement);
 console.log(navBarObject);
