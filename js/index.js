@@ -25,7 +25,6 @@ const cardImgContainer = document.querySelector(".card-img");
 
 const cardTextContainer = document.querySelector(".monster-stats")
 
-console.log(indexExample);
 /* console.log(indexExample); */
 console.log(allMonstersExample);
 console.log(monsterExample);
@@ -151,9 +150,8 @@ Object.keys(navBarObject).forEach((category) => {
   navBtnContainer.appendChild(btn);
 });
 headerElement.appendChild(navBtnContainer);
-document.body.appendChild(headerElement);
+document.body.prepend(headerElement);
 console.log(navBarObject);
-
 
 /* NAVBAR START */
 

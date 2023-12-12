@@ -1,4 +1,3 @@
-
 :root {
   --light: #f6f7eb;
   --dark: #2f3437;
@@ -11,14 +10,19 @@
   box-sizing: border-box;
 }
 
-body{
-    display: grid;
-    place-content: center;
-    height: 100vh;
+body {
+  display: grid;
+  grid-template-areas:
+    "nav nav nav nav"
+    "* info info * "
+    "* info info * ";
+  height: 100vh;
 }
-/* .info-card{ */
-/* ikkje gjør som john seie */
-/* } */
+.info-card {
+  place-self: center;
+  grid-area: "info";
+  /*IKKE GJØR SOM JOHN SIER*/
+}
 
 .darkMode {
   background-color: var(--dark);
@@ -37,6 +41,7 @@ body{
   height: 100px;
   justify-content: space-around;
   align-items: center;
+  grid-area: "nav";
 }
 
 .logoContainer img {
