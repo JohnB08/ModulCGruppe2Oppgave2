@@ -14,13 +14,37 @@ body {
   display: grid;
   grid-template-areas:
     "nav nav nav nav"
-    "* info info * "
-    "* info info * ";
+    ". info info . ";
+  grid-template-rows: 6rem 1fr;
   height: 100vh;
 }
+
+/* TEXT CLASSER */
+
+.headerText {
+  font: bold 48px/50px "Open Sans", sans-serif;
+}
+
+.subHeaderText {
+  font: bold 24px/28px "Open Sans", sans-serif;
+}
+.btnText {
+  font: bold 16px/24px "Open Sans", sans-serif;
+}
+
+.descriptionText {
+  font: 24px/28px "Open Sans", sans-serif;
+}
+
+.btnTextNoBold {
+  font: 16px/24px "Open Sans", sans-serif;
+}
+
+/* -------- */
+
 .info-card {
+  grid-area: info;
   place-self: center;
-  grid-area: "info";
   /*IKKE GJØR SOM JOHN SIER*/
 }
 
@@ -36,33 +60,77 @@ body {
 }
 
 .navBar {
+  grid-area: nav;
   display: flex;
   width: 100vw;
-  height: 100px;
   justify-content: space-around;
   align-items: center;
-  grid-area: "nav";
 }
 
-.logoContainer img {
+.logoContainer {
   width: 30%;
+}
+.logoContainer img {
+  width: 100%;
 }
 
 .navBtnContainer {
-  width: 40%;
+  width: 55%;
   display: flex;
+  padding: 10px;
   justify-content: space-around;
 }
-
-.navBarBtn {
+.btnTextOnly {
   background: none;
   border: none;
   text-decoration: underline;
+}
+.navBarBtn {
+  width: 10rem;
+  text-align: center;
   transition: 250ms;
+  position: relative;
 }
 
-.navBarBtn:hover {
+.btnTextOnly:hover {
   cursor: pointer;
   transform: scale(110%);
   color: var(--accent);
+}
+
+.sideBorders {
+  border-left: 4px solid var(--accent);
+  border-right: 4px solid var(--accent);
+}
+
+.subMenu {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 10rem;
+  padding: 10px 0;
+  gap: 10px;
+  opacity: 0;
+  animation: 500ms ease-in-out reverse dropDown;
+  animation-fill-mode: forwards;
+}
+@keyframes dropDown {
+  0% {
+    opacity: 100%;
+  }
+}
+
+.subMenuBtn {
+  position: absolute;
+  opacity: 0;
+  animation: 25ms ease-in-out reverse btnDropDown;
+  animation-fill-mode: forwards;
+}
+
+@keyframes btnDropDown {
+  0% {
+    position: static;
+    opacity: 100%;
+  }
 }

@@ -11,7 +11,7 @@ const apiURL = "https://www.dnd5eapi.co";
 
 const apiIndex = "https://www.dnd5eapi.co/api";
 
-/* const indexExample = await fetchApi(apiIndex); */
+const indexExample = await fetchApi(apiIndex);
 
 const allMonstersUrl = "https://www.dnd5eapi.co/api/monsters";
 
@@ -23,9 +23,9 @@ const monsterExample = await fetchApi(monsterUrl);
 
 const cardImgContainer = document.querySelector(".card-img");
 
-const cardTextContainer = document.querySelector(".monster-stats")
+const cardTextContainer = document.querySelector(".monster-stats");
 
-/* console.log(indexExample); */
+console.log(indexExample);
 console.log(allMonstersExample);
 console.log(monsterExample);
 
@@ -109,7 +109,7 @@ const makeNavBarObject = async (object) => {
     name: "Equipment",
     categories: object["equipment-categories"],
     normalEquipment: object["equipment"],
-    magicEquipment: object["magic-equipment"],
+    magicItems: object["magic-items"],
   };
   navBarObject.monsters = {
     name: "Monsters",
@@ -142,25 +142,69 @@ logoContainer.appendChild(logo);
 headerElement.appendChild(logoContainer);
 const navBtnContainer = makeElements("div", { className: "navBtnContainer" });
 Object.keys(navBarObject).forEach((category) => {
-  const btn = makeElements("button", {
-    className: "navBarBtn",
+  const btn = makeElements("div", {
+    className: "btnTextOnly btnText navBarBtn",
     innerText: navBarObject[category].name,
     id: category,
   });
+  btn.addEventListener("mouseover", (event) =>
+    subMenuGenerator(event, category)
+  );
   navBtnContainer.appendChild(btn);
 });
+
 headerElement.appendChild(navBtnContainer);
 document.body.prepend(headerElement);
 console.log(navBarObject);
+navBtnContainer.addEventListener("mouseover", (event) => {
+  if (!menuOpen) return;
+  else if (event.target === navBtnContainer) subMenuRemover();
+});
 
-/* NAVBAR START */
+/* DROPDOWN MENU! */
+let menuOpen = false;
+let menuElements = [];
+let btnId = 0;
+const subMenuGenerator = (event, category) => {
+  const selectedBtn = event.target;
+  if (menuOpen) {
+    return;
+  } else {
+    btnId = 0;
+    const subMenu = makeElements("div", {
+      className: "subMenu navDark sideBorders",
+    });
+    Object.keys(navBarObject[category]).forEach((subCat) => {
+      const btn = makeElements("button", {
+        className: "btnTextOnly btnTextNoBold subMenuBtn",
+        innerText: subCat,
+        id: subCat,
+      });
+      btnId++;
+      btn.style.animationDelay = `${btnId * 25}ms`;
+      subMenu.appendChild(btn);
+      menuElements.push(subMenu);
+      subMenu.addEventListener("mouseleave", () => subMenuRemover());
+    });
+    selectedBtn.appendChild(subMenu);
+    menuOpen = true;
+  }
+};
+const subMenuRemover = () => {
+  if (!menuOpen) return;
+  else {
+    menuElements.forEach((element) => element.remove());
+    menuElements = [];
+    menuOpen = false;
+  }
+};
 
+/* NAVBAR END */
 
 const cardImage = document.createElement("img");
 cardImage.src = apiURL + monsterExample.image;
-cardImage.setAttribute("width", "400")
-cardImage.setAttribute("height", "300")
-cardImgContainer.appendChild(cardImage)
- 
+cardImage.setAttribute("width", "400");
+cardImage.setAttribute("height", "300");
+cardImgContainer.appendChild(cardImage);
 
- console.log(apiURL + monsterExample.image);
+console.log(apiURL + monsterExample.image);
