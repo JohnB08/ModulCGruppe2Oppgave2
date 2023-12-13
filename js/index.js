@@ -200,11 +200,15 @@ const subMenuRemover = () => {
 };
 
 /* NAVBAR END */
-
+//card information maker
 const cardImage = document.createElement("img");
 cardImage.src = apiURL + monsterExample.image;
 cardImage.setAttribute("width", "400");
 cardImage.setAttribute("height", "300");
 cardImgContainer.appendChild(cardImage);
+
+const cardText = document.createElement("h1")
+cardText.textContent = `${monsterExample.name}`
+cardTextContainer.appendChild(cardText)
 
 console.log(apiURL + monsterExample.image);
