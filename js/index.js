@@ -213,10 +213,13 @@ const monsterSize = document.createElement("p")
 const monsterArmor = document.createElement("p")
 const monsterHP = document.createElement("p")
 const monsterSpeed = document.createElement("p")
+const monsterStats = document.createElement("p")
+const monsterSkill = document.createElement("p")
+const monsterSense = document.createElement("p")
 monsterName.textContent = `${monsterExample.name}`
 cardTextContainer.appendChild(monsterName)
 
-//size, race and alignment maker
+//size, race and alignment display
 monsterSize.textContent = `${monsterExample.size}, ${monsterExample.type}, ${monsterExample.alignment}`
 cardTextContainer.appendChild(monsterSize)
 
@@ -224,10 +227,24 @@ cardTextContainer.appendChild(monsterSize)
 monsterArmor.textContent = `Armor Class ${monsterExample.armor_class[0].value}`
 cardTextContainer.appendChild(monsterArmor)
 
-//hit points maker
+//hit points display
 monsterHP.textContent = `Hit Point ${monsterExample.hit_points} (${monsterExample.hit_points_roll})`
 cardTextContainer.appendChild(monsterHP)
 
-//speed value maker
+//speed value display
 monsterSpeed.textContent = `Speed ${monsterExample.speed.walk}`
 cardTextContainer.appendChild(monsterSpeed)
+
+//Monster stats display
+monsterStats.textContent = `STR ${monsterExample.strength} DEX ${monsterExample.dexterity} CON ${monsterExample.constitution} INT ${monsterExample.intelligence} WIS ${monsterExample.wisdom} CHA ${monsterExample.charisma}`
+cardTextContainer.appendChild(monsterStats)
+
+//Monster skill display
+//fix a better method which makes it able to register monster with more than 2 skills
+monsterSkill.textContent = `Skills ${monsterExample.proficiencies[0].proficiency.name.slice(6)} +${monsterExample.proficiencies[0].value}, ${monsterExample.proficiencies[1].proficiency.name.slice(6)} +${monsterExample.proficiencies[1].value}`
+cardTextContainer.appendChild(monsterSkill)
+
+//Monster sense Display
+// find a way to remove "_" in propertynames
+monsterSense.textContent = `Senses ${Object.getOwnPropertyNames(monsterExample.senses)} ${Object.values(monsterExample.senses)}`;
+cardTextContainer.appendChild(monsterSense)

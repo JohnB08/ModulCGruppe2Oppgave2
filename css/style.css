@@ -43,6 +43,7 @@ body {
 /* -------- */
 
 .info-card {
+  display: none;
   grid-area: info;
   place-self: center;
   /*IKKE GJØR SOM JOHN SIER*/
