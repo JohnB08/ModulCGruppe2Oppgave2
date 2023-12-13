@@ -33,7 +33,7 @@ console.log(monsterExample);
 /*
  *Alle funksjoner skal ta inn ett av eksemplene som parameter.
  *Dette gjøres ved å si først til funksjonen din når du lager den, at du vil ha et parameter
- *kodestruktur: 
+ *kodestruktur:
  *const fetchMonsters = (parameterObject) => {
  *Så bruker du parameteret inni funksjonen
  *   console.log(parameterObject)
@@ -67,7 +67,7 @@ const makeElements = (type, parameters) => {
 /* For å lage en brukervennlig navbar må index fra API struktureres litt annerledes. */
 
 /* NAVBAR START*/
-
+console.log(window.navigator);
 /**
  * Lager et nytt object basert på API, strukturert så navBar i topp får fem knapper med hver sin undermeny.
  * er mye mer leslig en det orginale objektet.
@@ -135,41 +135,72 @@ const fetchNavBarObject = async () => {
   }
   return navBarObject;
 };
-
-const navBarObject = await fetchNavBarObject();
-const headerElement = makeElements("header", { className: "navBar navDark" });
-const logoContainer = makeElements("div", { className: "logoContainer" });
-const logo = makeElements("img", { src: "./img/logo.svg" });
-logoContainer.appendChild(logo);
-headerElement.appendChild(logoContainer);
-const navBtnContainer = makeElements("div", { className: "navBtnContainer" });
-Object.keys(navBarObject).forEach((category) => {
-  const btn = makeElements("div", {
-    className: "btnTextOnly btnText navBarBtn",
-    innerText: navBarObject[category].name,
-    id: category,
-  });
-  btn.addEventListener("mouseover", (event) =>
-    subMenuGenerator(event, category)
-  );
-  navBtnContainer.appendChild(btn);
-});
-
-headerElement.appendChild(navBtnContainer);
-document.body.prepend(headerElement);
-console.log(navBarObject);
-navBtnContainer.addEventListener("mouseover", (event) => {
-  if (!menuOpen) return;
-  else if (event.target === navBtnContainer) subMenuRemover();
-});
-
-/* DROPDOWN MENU! */
 let menuOpen = false;
+const desktopNavBar = async () => {
+  const navBarObject = await fetchNavBarObject();
+  const headerElement = makeElements("header", { className: "navBar navDark" });
+  const logoContainer = makeElements("div", { className: "logoContainer" });
+  const logo = makeElements("img", { src: "./img/logo.svg" });
+  logoContainer.appendChild(logo);
+  headerElement.appendChild(logoContainer);
+  const navBtnContainer = makeElements("div", { className: "navBtnContainer" });
+  Object.keys(navBarObject).forEach((category) => {
+    const btn = makeElements("div", {
+      className: "btnTextOnly btnText navBarBtn",
+      innerText: navBarObject[category].name,
+      id: category,
+    });
+    btn.addEventListener("mouseover", (event) =>
+      subMenuGenerator(event, category, navBarObject)
+    );
+    navBtnContainer.appendChild(btn);
+  });
+
+  headerElement.appendChild(navBtnContainer);
+  document.body.prepend(headerElement);
+  console.log(navBarObject);
+  navBtnContainer.addEventListener("mouseover", (event) => {
+    if (!subMenuOpen) return;
+    else if (event.target === navBtnContainer) subMenuRemover();
+  });
+};
+
+const mobileNavBar = async () => {
+  const navBarObject = await fetchNavBarObject();
+  const headerElement = makeElements("header", { className: "mobileHeader" });
+  const logoContainer = makeElements("div", { className: "mobileLogo" });
+  const logo = makeElements("img", { src: "./img/logo.svg" });
+  const menuBtn = makeElements("img", { className: "menuBtn" });
+  const navBtnContainer = makeElements("div", { className: "mobileNavMenu" });
+  Object.keys(navBarObject).forEach((category) => {
+    const btn = makeElements("div", {
+      className: "btnTextOnly btnText navBarBtn",
+      innerText: navBarObject[category].name,
+      id: category,
+    });
+    btn.addEventListener("click", (event) => {
+      mobileSubMenuGenerator(event, category, navBarObject);
+    });
+    navBtnContainer.appendChild(btn);
+  });
+  menuBtn.addEventListener("click", () => {
+    if (!menuOpen) {
+      navBtnContainer.style.display = "flex";
+      menuOpen = true;
+    } else {
+      navBtnContainer.style.display = "none";
+      menuOpen = false;
+    }
+  });
+};
+
+/* DROPDOWN MENU DESKTOP! */
+let subMenuOpen = false;
 let menuElements = [];
 let btnId = 0;
-const subMenuGenerator = (event, category) => {
+const subMenuGenerator = (event, category, navBarObject) => {
   const selectedBtn = event.target;
-  if (menuOpen) {
+  if (subMenuOpen) {
     return;
   } else {
     btnId = 0;
@@ -189,15 +220,43 @@ const subMenuGenerator = (event, category) => {
       subMenu.addEventListener("mouseleave", () => subMenuRemover());
     });
     selectedBtn.appendChild(subMenu);
-    menuOpen = true;
+    subMenuOpen = true;
   }
 };
 const subMenuRemover = () => {
-  if (!menuOpen) return;
+  if (!subMenuOpen) return;
   else {
     menuElements.forEach((element) => element.remove());
     menuElements = [];
-    menuOpen = false;
+    subMenuOpen = false;
+  }
+};
+
+const mobileSubMenuGenerator = (event, category, navBarObject) => {
+  const selectedBtn = event.target;
+  if (!subMenuOpen) {
+    menuElements.forEach((element) => element.remove());
+    menuElements = [];
+    subMenuOpen = false;
+  } else {
+    btnId = 0;
+    const subMenu = makeElements("div", {
+      className: "mobileSubMenu navDark",
+    });
+    Object.keys(navBarObject[category]).forEach((subCat) => {
+      const btn = makeElements("button", {
+        className: "btnTextOnly btnTextNoBold subMenuBtn",
+        innerText: subCat,
+        id: subCat,
+      });
+      btnId++;
+      btn.style.animationDelay = `${btnId * 25}ms`;
+      subMenu.appendChild(btn);
+      menuElements.push(subMenu);
+      subMenu.addEventListener("mouseleave", () => subMenuRemover());
+    });
+    selectedBtn.appendChild(subMenu);
+    subMenuOpen = true;
   }
 };
 
