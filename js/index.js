@@ -165,34 +165,7 @@ const desktopNavBar = async () => {
   });
 };
 
-const mobileNavBar = async () => {
-  const navBarObject = await fetchNavBarObject();
-  const headerElement = makeElements("header", { className: "mobileHeader" });
-  const logoContainer = makeElements("div", { className: "mobileLogo" });
-  const logo = makeElements("img", { src: "./img/logo.svg" });
-  const menuBtn = makeElements("img", { className: "menuBtn" });
-  const navBtnContainer = makeElements("div", { className: "mobileNavMenu" });
-  Object.keys(navBarObject).forEach((category) => {
-    const btn = makeElements("div", {
-      className: "btnTextOnly btnText navBarBtn",
-      innerText: navBarObject[category].name,
-      id: category,
-    });
-    btn.addEventListener("click", (event) => {
-      mobileSubMenuGenerator(event, category, navBarObject);
-    });
-    navBtnContainer.appendChild(btn);
-  });
-  menuBtn.addEventListener("click", () => {
-    if (!menuOpen) {
-      navBtnContainer.style.display = "flex";
-      menuOpen = true;
-    } else {
-      navBtnContainer.style.display = "none";
-      menuOpen = false;
-    }
-  });
-};
+await desktopNavBar();
 
 /* DROPDOWN MENU DESKTOP! */
 let subMenuOpen = false;
