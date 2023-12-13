@@ -6,6 +6,8 @@ const fetchApi = async (url) => {
   return result;
 };
 
+
+
 /* Dette er apiurlen vi legger alle andre url til inni objektet. */
 const apiURL = "https://www.dnd5eapi.co";
 
@@ -29,3 +31,14 @@ console.log(monsterExample);
  *Alle funksjoner skal ta inn ett av eksemplene som parameter.
  *kodestruktur: const fetchMonsters = (monsterExample) => {}
  */
+
+ const fetchApi = async("https://www.dnd5eapi.co/api/monsters";)=>{
+  const response= await fetch("https://www.dnd5eapi.co/api/monsters", {
+    accept: "application/json",
+  })
+
+  const result = await response.json();
+  return result;
+
+ }
+
