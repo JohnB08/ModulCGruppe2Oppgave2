@@ -200,15 +200,34 @@ const subMenuRemover = () => {
 };
 
 /* NAVBAR END */
-//card information maker
+//monsterCard image maker
 const cardImage = document.createElement("img");
 cardImage.src = apiURL + monsterExample.image;
 cardImage.setAttribute("width", "400");
 cardImage.setAttribute("height", "300");
 cardImgContainer.appendChild(cardImage);
 
-const cardText = document.createElement("h1")
-cardText.textContent = `${monsterExample.name}`
-cardTextContainer.appendChild(cardText)
+//monsterCard text content maker
+const monsterName = document.createElement("h1")
+const monsterSize = document.createElement("p")
+const monsterArmor = document.createElement("p")
+const monsterHP = document.createElement("p")
+const monsterSpeed = document.createElement("p")
+monsterName.textContent = `${monsterExample.name}`
+cardTextContainer.appendChild(monsterName)
 
-console.log(apiURL + monsterExample.image);
+//size, race and alignment maker
+monsterSize.textContent = `${monsterExample.size}, ${monsterExample.type}, ${monsterExample.alignment}`
+cardTextContainer.appendChild(monsterSize)
+
+//create armor information
+monsterArmor.textContent = `Armor Class ${monsterExample.armor_class[0].value}`
+cardTextContainer.appendChild(monsterArmor)
+
+//hit points maker
+monsterHP.textContent = `Hit Point ${monsterExample.hit_points} (${monsterExample.hit_points_roll})`
+cardTextContainer.appendChild(monsterHP)
+
+//speed value maker
+monsterSpeed.textContent = `Speed ${monsterExample.speed.walk}`
+cardTextContainer.appendChild(monsterSpeed)
