@@ -1,5 +1,6 @@
 const fetchApi = async (url) => {
   const response = await fetch(url, {
+    //dette objektet er med fordi API må vite at vi vil ha en json fil tilbake
     accept: "application/json",
   });
   const result = await response.json();
@@ -32,7 +33,8 @@ console.log(monsterExample);
 /*
  *Alle funksjoner skal ta inn ett av eksemplene som parameter.
  *Dette gjøres ved å si først til funksjonen din når du lager den, at du vil ha et parameter
- *kodestruktur: const fetchMonsters = (parameterObject) => {
+ *kodestruktur: 
+ *const fetchMonsters = (parameterObject) => {
  *Så bruker du parameteret inni funksjonen
  *   console.log(parameterObject)
  *
