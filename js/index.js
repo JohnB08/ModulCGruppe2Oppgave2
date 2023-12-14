@@ -77,41 +77,46 @@ console.log(window.navigator);
 const makeNavBarObject = async (object) => {
   const navBarObject = {};
   navBarObject.generalRules = {
-    abilityScores: object["ability-scores"],
-    feats: object["feats"],
-    conditions: object["conditions"],
-    features: object["features"],
-    damageTypes: object["damage-types"],
-    proficiencies: object["proficiencies"],
-    traits: object["traits"],
-    magicSchools: object["magic-schools"],
-    backgrounds: object["backgrounds"],
-    alignments: object["alignments"],
-    rules: object["rules"],
+    subMenu: {
+      "Ability Scores": object["ability-scores"],
+      Feats: object["feats"],
+      Conditions: object["conditions"],
+      Features: object["features"],
+      "Damage Types": object["damage-types"],
+      Proficiencies: object["proficiencies"],
+      Traits: object["traits"],
+      "Magic Schools": object["magic-schools"],
+      Backgrounds: object["backgrounds"],
+      Alignments: object["alignments"],
+      Rules: object["rules"],
+    },
     name: "General Rules",
   };
   navBarObject.classes = {
     name: "Classes",
     allClasses: object["classes"],
+    subMenu: {},
   };
   let fetchClasses = await fetchApi(`${apiURL}${object["classes"]}`);
-  console.log(fetchClasses.results);
   for (let classID of fetchClasses.results) {
-    navBarObject.classes[classID.index] = classID;
+    navBarObject.classes.subMenu[classID.index] = classID;
   }
   navBarObject.races = {
     name: "Races",
     allRaces: object["races"],
+    subMenu: {},
   };
   let fetchRaces = await fetchApi(`${apiURL}${object["races"]}`);
   for (let race of fetchRaces.results) {
-    navBarObject.races[race.index] = race;
+    navBarObject.races.subMenu[race.index] = race;
   }
   navBarObject.equipment = {
     name: "Equipment",
-    categories: object["equipment-categories"],
-    normalEquipment: object["equipment"],
-    magicItems: object["magic-items"],
+    subMenu: {
+      Categories: object["equipment-categories"],
+      "Normal Equipment": object["equipment"],
+      "Magic Items": object["magic-items"],
+    },
   };
   navBarObject.monsters = {
     name: "Monsters",
@@ -136,14 +141,22 @@ const fetchNavBarObject = async () => {
   return navBarObject;
 };
 let menuOpen = false;
-const desktopNavBar = async () => {
+const navBarMaker = async () => {
   const navBarObject = await fetchNavBarObject();
   const headerElement = makeElements("header", { className: "navBar navDark" });
   const logoContainer = makeElements("div", { className: "logoContainer" });
   const logo = makeElements("img", { src: "./img/logo.svg" });
   logoContainer.appendChild(logo);
   headerElement.appendChild(logoContainer);
-  const navBtnContainer = makeElements("div", { className: "navBtnContainer" });
+  const navBtnContainer = desktopButtonDisplay(navBarObject);
+  headerElement.appendChild(navBtnContainer);
+  document.body.prepend(headerElement);
+};
+
+const desktopButtonDisplay = (navBarObject) => {
+  const navBtnContainer = makeElements("div", {
+    className: "navBtnContainer",
+  });
   Object.keys(navBarObject).forEach((category) => {
     const btn = makeElements("div", {
       className: "btnTextOnly btnText navBarBtn",
@@ -156,16 +169,14 @@ const desktopNavBar = async () => {
     navBtnContainer.appendChild(btn);
   });
 
-  headerElement.appendChild(navBtnContainer);
-  document.body.prepend(headerElement);
-  console.log(navBarObject);
   navBtnContainer.addEventListener("mouseover", (event) => {
     if (!subMenuOpen) return;
     else if (event.target === navBtnContainer) subMenuRemover();
   });
+  return navBtnContainer;
 };
 
-await desktopNavBar();
+await navBarMaker();
 
 /* DROPDOWN MENU DESKTOP! */
 let subMenuOpen = false;
@@ -175,12 +186,14 @@ const subMenuGenerator = (event, category, navBarObject) => {
   const selectedBtn = event.target;
   if (subMenuOpen) {
     return;
+  } else if (!navBarObject[category].subMenu) {
+    return;
   } else {
     btnId = 0;
     const subMenu = makeElements("div", {
       className: "subMenu navDark sideBorders",
     });
-    Object.keys(navBarObject[category]).forEach((subCat) => {
+    Object.keys(navBarObject[category].subMenu).forEach((subCat) => {
       const btn = makeElements("button", {
         className: "btnTextOnly btnTextNoBold subMenuBtn",
         innerText: subCat,
@@ -216,7 +229,7 @@ const mobileSubMenuGenerator = (event, category, navBarObject) => {
     const subMenu = makeElements("div", {
       className: "mobileSubMenu navDark",
     });
-    Object.keys(navBarObject[category]).forEach((subCat) => {
+    Object.keys(navBarObject[category].subMenu).forEach((subCat) => {
       const btn = makeElements("button", {
         className: "btnTextOnly btnTextNoBold subMenuBtn",
         innerText: subCat,
@@ -242,73 +255,81 @@ cardImage.setAttribute("height", "300");
 cardImgContainer.appendChild(cardImage);
 
 //monsterCard text content maker
-const monsterName = document.createElement("h1")
-const monsterSize = document.createElement("p")
-const monsterArmor = document.createElement("p")
-const monsterHP = document.createElement("p")
-const monsterSpeed = document.createElement("p")
-const monsterStats = document.createElement("p")
-const monsterSkill = document.createElement("p")
-const monsterSense = document.createElement("p")
-const monsterLanguage = document.createElement("p")
-const monsterExp = document.createElement("p")
-const monsterProficiencyBonus = document.createElement("p")
-const monsterSpecialAbility = document.createElement("p")
-const monsterAction = document.createElement("p")
-const monsterDescription = document.createElement("p")
-monsterName.textContent = `${monsterExample.name}`
-cardTextContainer.appendChild(monsterName)
+const monsterName = document.createElement("h1");
+const monsterSize = document.createElement("p");
+const monsterArmor = document.createElement("p");
+const monsterHP = document.createElement("p");
+const monsterSpeed = document.createElement("p");
+const monsterStats = document.createElement("p");
+const monsterSkill = document.createElement("p");
+const monsterSense = document.createElement("p");
+const monsterLanguage = document.createElement("p");
+const monsterExp = document.createElement("p");
+const monsterProficiencyBonus = document.createElement("p");
+const monsterSpecialAbility = document.createElement("p");
+const monsterAction = document.createElement("p");
+const monsterDescription = document.createElement("p");
+monsterName.textContent = `${monsterExample.name}`;
+cardTextContainer.appendChild(monsterName);
 
 //size, race and alignment display
-monsterSize.textContent = `${monsterExample.size}, ${monsterExample.type}, ${monsterExample.alignment}`
-cardTextContainer.appendChild(monsterSize)
+monsterSize.textContent = `${monsterExample.size}, ${monsterExample.type}, ${monsterExample.alignment}`;
+cardTextContainer.appendChild(monsterSize);
 
 //create armor information
-monsterArmor.textContent = `Armor Class ${monsterExample.armor_class[0].value}`
-cardTextContainer.appendChild(monsterArmor)
+monsterArmor.textContent = `Armor Class ${monsterExample.armor_class[0].value}`;
+cardTextContainer.appendChild(monsterArmor);
 
 //hit points display
-monsterHP.textContent = `Hit Point ${monsterExample.hit_points} (${monsterExample.hit_points_roll})`
-cardTextContainer.appendChild(monsterHP)
+monsterHP.textContent = `Hit Point ${monsterExample.hit_points} (${monsterExample.hit_points_roll})`;
+cardTextContainer.appendChild(monsterHP);
 
 //speed value display
-monsterSpeed.textContent = `Speed ${monsterExample.speed.walk}`
-cardTextContainer.appendChild(monsterSpeed)
+monsterSpeed.textContent = `Speed ${monsterExample.speed.walk}`;
+cardTextContainer.appendChild(monsterSpeed);
 
 //Monster stats display
-monsterStats.textContent = `STR ${monsterExample.strength} DEX ${monsterExample.dexterity} CON ${monsterExample.constitution} INT ${monsterExample.intelligence} WIS ${monsterExample.wisdom} CHA ${monsterExample.charisma}`
-cardTextContainer.appendChild(monsterStats)
+monsterStats.textContent = `STR ${monsterExample.strength} DEX ${monsterExample.dexterity} CON ${monsterExample.constitution} INT ${monsterExample.intelligence} WIS ${monsterExample.wisdom} CHA ${monsterExample.charisma}`;
+cardTextContainer.appendChild(monsterStats);
 
 //Monster skill display
 //fix a better method which makes it able to register monster with more than 2 skills
-monsterSkill.textContent = `Skills ${monsterExample.proficiencies[0].proficiency.name.slice(6)} +${monsterExample.proficiencies[0].value}, ${monsterExample.proficiencies[1].proficiency.name.slice(6)} +${monsterExample.proficiencies[1].value}`
-cardTextContainer.appendChild(monsterSkill)
+monsterSkill.textContent = `Skills ${monsterExample.proficiencies[0].proficiency.name.slice(
+  6
+)} +${
+  monsterExample.proficiencies[0].value
+}, ${monsterExample.proficiencies[1].proficiency.name.slice(6)} +${
+  monsterExample.proficiencies[1].value
+}`;
+cardTextContainer.appendChild(monsterSkill);
 
 //Monster sense Display
 // find a way to remove "_" in propertynames
-monsterSense.textContent = `Senses ${Object.getOwnPropertyNames(monsterExample.senses)} ${Object.values(monsterExample.senses)}`;
-cardTextContainer.appendChild(monsterSense)
+monsterSense.textContent = `Senses ${Object.getOwnPropertyNames(
+  monsterExample.senses
+)} ${Object.values(monsterExample.senses)}`;
+cardTextContainer.appendChild(monsterSense);
 
 //Monster Language Display
-monsterLanguage.textContent = `Languages ${monsterExample.languages}`
-cardTextContainer.appendChild(monsterLanguage)
+monsterLanguage.textContent = `Languages ${monsterExample.languages}`;
+cardTextContainer.appendChild(monsterLanguage);
 
 //Monster xp and challenge rating
-monsterExp.textContent = `Challenge ${monsterExample.challenge_rating} (${monsterExample.xp} XP)`
-cardTextContainer.appendChild(monsterExp)
+monsterExp.textContent = `Challenge ${monsterExample.challenge_rating} (${monsterExample.xp} XP)`;
+cardTextContainer.appendChild(monsterExp);
 
 //Monster proficiency bonus display
-monsterProficiencyBonus.textContent = `Proficiency Bonus +${monsterExample.proficiency_bonus}`
-cardTextContainer.appendChild(monsterProficiencyBonus)
+monsterProficiencyBonus.textContent = `Proficiency Bonus +${monsterExample.proficiency_bonus}`;
+cardTextContainer.appendChild(monsterProficiencyBonus);
 
 //Monster Special ability
-monsterSpecialAbility.textContent = `${monsterExample.special_abilities[0].name} ${monsterExample.special_abilities[0].desc}`
-cardTextContainer.appendChild(monsterSpecialAbility)
+monsterSpecialAbility.textContent = `${monsterExample.special_abilities[0].name} ${monsterExample.special_abilities[0].desc}`;
+cardTextContainer.appendChild(monsterSpecialAbility);
 
 //Monster Action
-monsterAction.textContent = `Action ${monsterExample.actions[0].name} ${monsterExample.actions[0].desc}`
-cardTextContainer.appendChild(monsterAction)
+monsterAction.textContent = `Action ${monsterExample.actions[0].name} ${monsterExample.actions[0].desc}`;
+cardTextContainer.appendChild(monsterAction);
 
 //Monster descprtion
-monsterDescription.textContent = `Description ${monsterExample.desc}`
-cardTextContainer.appendChild(monsterDescription)
+monsterDescription.textContent = `Description ${monsterExample.desc}`;
+cardTextContainer.appendChild(monsterDescription);
