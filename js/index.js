@@ -234,11 +234,81 @@ const mobileSubMenuGenerator = (event, category, navBarObject) => {
 };
 
 /* NAVBAR END */
-
+//monsterCard image maker
 const cardImage = document.createElement("img");
 cardImage.src = apiURL + monsterExample.image;
 cardImage.setAttribute("width", "400");
 cardImage.setAttribute("height", "300");
 cardImgContainer.appendChild(cardImage);
 
-console.log(apiURL + monsterExample.image);
+//monsterCard text content maker
+const monsterName = document.createElement("h1")
+const monsterSize = document.createElement("p")
+const monsterArmor = document.createElement("p")
+const monsterHP = document.createElement("p")
+const monsterSpeed = document.createElement("p")
+const monsterStats = document.createElement("p")
+const monsterSkill = document.createElement("p")
+const monsterSense = document.createElement("p")
+const monsterLanguage = document.createElement("p")
+const monsterExp = document.createElement("p")
+const monsterProficiencyBonus = document.createElement("p")
+const monsterSpecialAbility = document.createElement("p")
+const monsterAction = document.createElement("p")
+const monsterDescription = document.createElement("p")
+monsterName.textContent = `${monsterExample.name}`
+cardTextContainer.appendChild(monsterName)
+
+//size, race and alignment display
+monsterSize.textContent = `${monsterExample.size}, ${monsterExample.type}, ${monsterExample.alignment}`
+cardTextContainer.appendChild(monsterSize)
+
+//create armor information
+monsterArmor.textContent = `Armor Class ${monsterExample.armor_class[0].value}`
+cardTextContainer.appendChild(monsterArmor)
+
+//hit points display
+monsterHP.textContent = `Hit Point ${monsterExample.hit_points} (${monsterExample.hit_points_roll})`
+cardTextContainer.appendChild(monsterHP)
+
+//speed value display
+monsterSpeed.textContent = `Speed ${monsterExample.speed.walk}`
+cardTextContainer.appendChild(monsterSpeed)
+
+//Monster stats display
+monsterStats.textContent = `STR ${monsterExample.strength} DEX ${monsterExample.dexterity} CON ${monsterExample.constitution} INT ${monsterExample.intelligence} WIS ${monsterExample.wisdom} CHA ${monsterExample.charisma}`
+cardTextContainer.appendChild(monsterStats)
+
+//Monster skill display
+//fix a better method which makes it able to register monster with more than 2 skills
+monsterSkill.textContent = `Skills ${monsterExample.proficiencies[0].proficiency.name.slice(6)} +${monsterExample.proficiencies[0].value}, ${monsterExample.proficiencies[1].proficiency.name.slice(6)} +${monsterExample.proficiencies[1].value}`
+cardTextContainer.appendChild(monsterSkill)
+
+//Monster sense Display
+// find a way to remove "_" in propertynames
+monsterSense.textContent = `Senses ${Object.getOwnPropertyNames(monsterExample.senses)} ${Object.values(monsterExample.senses)}`;
+cardTextContainer.appendChild(monsterSense)
+
+//Monster Language Display
+monsterLanguage.textContent = `Languages ${monsterExample.languages}`
+cardTextContainer.appendChild(monsterLanguage)
+
+//Monster xp and challenge rating
+monsterExp.textContent = `Challenge ${monsterExample.challenge_rating} (${monsterExample.xp} XP)`
+cardTextContainer.appendChild(monsterExp)
+
+//Monster proficiency bonus display
+monsterProficiencyBonus.textContent = `Proficiency Bonus +${monsterExample.proficiency_bonus}`
+cardTextContainer.appendChild(monsterProficiencyBonus)
+
+//Monster Special ability
+monsterSpecialAbility.textContent = `${monsterExample.special_abilities[0].name} ${monsterExample.special_abilities[0].desc}`
+cardTextContainer.appendChild(monsterSpecialAbility)
+
+//Monster Action
+monsterAction.textContent = `Action ${monsterExample.actions[0].name} ${monsterExample.actions[0].desc}`
+cardTextContainer.appendChild(monsterAction)
+
+//Monster descprtion
+monsterDescription.textContent = `Description ${monsterExample.desc}`
+cardTextContainer.appendChild(monsterDescription)
