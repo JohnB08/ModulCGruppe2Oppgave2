@@ -216,6 +216,12 @@ const monsterSpeed = document.createElement("p")
 const monsterStats = document.createElement("p")
 const monsterSkill = document.createElement("p")
 const monsterSense = document.createElement("p")
+const monsterLanguage = document.createElement("p")
+const monsterExp = document.createElement("p")
+const monsterProficiencyBonus = document.createElement("p")
+const monsterSpecialAbility = document.createElement("p")
+const monsterAction = document.createElement("p")
+const monsterDescription = document.createElement("p")
 monsterName.textContent = `${monsterExample.name}`
 cardTextContainer.appendChild(monsterName)
 
@@ -248,3 +254,27 @@ cardTextContainer.appendChild(monsterSkill)
 // find a way to remove "_" in propertynames
 monsterSense.textContent = `Senses ${Object.getOwnPropertyNames(monsterExample.senses)} ${Object.values(monsterExample.senses)}`;
 cardTextContainer.appendChild(monsterSense)
+
+//Monster Language Display
+monsterLanguage.textContent = `Languages ${monsterExample.languages}`
+cardTextContainer.appendChild(monsterLanguage)
+
+//Monster xp and challenge rating
+monsterExp.textContent = `Challenge ${monsterExample.challenge_rating} (${monsterExample.xp} XP)`
+cardTextContainer.appendChild(monsterExp)
+
+//Monster proficiency bonus display
+monsterProficiencyBonus.textContent = `Proficiency Bonus +${monsterExample.proficiency_bonus}`
+cardTextContainer.appendChild(monsterProficiencyBonus)
+
+//Monster Special ability
+monsterSpecialAbility.textContent = `${monsterExample.special_abilities[0].name} ${monsterExample.special_abilities[0].desc}`
+cardTextContainer.appendChild(monsterSpecialAbility)
+
+//Monster Action
+monsterAction.textContent = `Action ${monsterExample.actions[0].name} ${monsterExample.actions[0].desc}`
+cardTextContainer.appendChild(monsterAction)
+
+//Monster descprtion
+monsterDescription.textContent = `Description ${monsterExample.desc}`
+cardTextContainer.appendChild(monsterDescription)
