@@ -33,7 +33,7 @@ console.log(monsterExample);
 /*
  *Alle funksjoner skal ta inn ett av eksemplene som parameter.
  *Dette gjøres ved å si først til funksjonen din når du lager den, at du vil ha et parameter
- *kodestruktur: 
+ *kodestruktur:
  *const fetchMonsters = (parameterObject) => {
  *Så bruker du parameteret inni funksjonen
  *   console.log(parameterObject)
@@ -67,7 +67,7 @@ const makeElements = (type, parameters) => {
 /* For å lage en brukervennlig navbar må index fra API struktureres litt annerledes. */
 
 /* NAVBAR START*/
-
+console.log(window.navigator);
 /**
  * Lager et nytt object basert på API, strukturert så navBar i topp får fem knapper med hver sin undermeny.
  * er mye mer leslig en det orginale objektet.
@@ -77,41 +77,46 @@ const makeElements = (type, parameters) => {
 const makeNavBarObject = async (object) => {
   const navBarObject = {};
   navBarObject.generalRules = {
-    abilityScores: object["ability-scores"],
-    feats: object["feats"],
-    conditions: object["conditions"],
-    features: object["features"],
-    damageTypes: object["damage-types"],
-    proficiencies: object["proficiencies"],
-    traits: object["traits"],
-    magicSchools: object["magic-schools"],
-    backgrounds: object["backgrounds"],
-    alignments: object["alignments"],
-    rules: object["rules"],
+    subMenu: {
+      "Ability Scores": object["ability-scores"],
+      Feats: object["feats"],
+      Conditions: object["conditions"],
+      Features: object["features"],
+      "Damage Types": object["damage-types"],
+      Proficiencies: object["proficiencies"],
+      Traits: object["traits"],
+      "Magic Schools": object["magic-schools"],
+      Backgrounds: object["backgrounds"],
+      Alignments: object["alignments"],
+      Rules: object["rules"],
+    },
     name: "General Rules",
   };
   navBarObject.classes = {
     name: "Classes",
     allClasses: object["classes"],
+    subMenu: {},
   };
   let fetchClasses = await fetchApi(`${apiURL}${object["classes"]}`);
-  console.log(fetchClasses.results);
   for (let classID of fetchClasses.results) {
-    navBarObject.classes[classID.index] = classID;
+    navBarObject.classes.subMenu[classID.index] = classID;
   }
   navBarObject.races = {
     name: "Races",
     allRaces: object["races"],
+    subMenu: {},
   };
   let fetchRaces = await fetchApi(`${apiURL}${object["races"]}`);
   for (let race of fetchRaces.results) {
-    navBarObject.races[race.index] = race;
+    navBarObject.races.subMenu[race.index] = race;
   }
   navBarObject.equipment = {
     name: "Equipment",
-    categories: object["equipment-categories"],
-    normalEquipment: object["equipment"],
-    magicItems: object["magic-items"],
+    subMenu: {
+      Categories: object["equipment-categories"],
+      "Normal Equipment": object["equipment"],
+      "Magic Items": object["magic-items"],
+    },
   };
   navBarObject.monsters = {
     name: "Monsters",
@@ -135,48 +140,125 @@ const fetchNavBarObject = async () => {
   }
   return navBarObject;
 };
-
-const navBarObject = await fetchNavBarObject();
-const headerElement = makeElements("header", { className: "navBar navDark" });
-const logoContainer = makeElements("div", { className: "logoContainer" });
-const logo = makeElements("img", { src: "./img/logo.svg" });
-logoContainer.appendChild(logo);
-headerElement.appendChild(logoContainer);
-const navBtnContainer = makeElements("div", { className: "navBtnContainer" });
-Object.keys(navBarObject).forEach((category) => {
-  const btn = makeElements("div", {
-    className: "btnTextOnly btnText navBarBtn",
-    innerText: navBarObject[category].name,
-    id: category,
-  });
-  btn.addEventListener("mouseover", (event) =>
-    subMenuGenerator(event, category)
-  );
-  navBtnContainer.appendChild(btn);
-});
-
-headerElement.appendChild(navBtnContainer);
-document.body.prepend(headerElement);
-console.log(navBarObject);
-navBtnContainer.addEventListener("mouseover", (event) => {
-  if (!menuOpen) return;
-  else if (event.target === navBtnContainer) subMenuRemover();
-});
-
-/* DROPDOWN MENU! */
 let menuOpen = false;
+let currentTarget = "";
+
+const desktopButtonDisplay = (navBarObject) => {
+  const navBtnContainer = makeElements("div", {
+    className: "navBtnContainer",
+  });
+  Object.keys(navBarObject).forEach((category) => {
+    const btn = makeElements("div", {
+      className: "btnTextOnly btnText navBarBtn",
+      innerText: navBarObject[category].name,
+      id: category,
+    });
+    btn.addEventListener("mouseover", (event) =>
+      subMenuGenerator(event, category, navBarObject)
+    );
+    navBtnContainer.appendChild(btn);
+  });
+
+  navBtnContainer.addEventListener("mouseover", (event) => {
+    if (!subMenuOpen) return;
+    else if (event.target === navBtnContainer) subMenuRemover();
+  });
+  return navBtnContainer;
+};
+
+const mobileButtonDisplay = (navBarObject, headerElement) => {
+  const hamButton = makeElements("div", { className: "hamBtn" });
+  const hamSVG = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  const svgAttributes = {
+    width: "3em",
+    height: "3em",
+    viewBox: "0 0 48 48",
+  };
+  Object.entries(svgAttributes).forEach((attribute) => {
+    let [attributeName, attributeValue] = attribute;
+    hamSVG.setAttribute(attributeName, attributeValue);
+  });
+  const hamPath1 = document.createElementNS(
+    "http://www.w3.org/2000/svg",
+    "path"
+  );
+  hamPath1.setAttribute("d", "M7.94971 11.9497H39.9497");
+  const hamPath2 = document.createElementNS(
+    "http://www.w3.org/2000/svg",
+    "path"
+  );
+  hamPath2.setAttribute("d", "M7.94971 23.9497H39.9497");
+  const hamPath3 = document.createElementNS(
+    "http://www.w3.org/2000/svg",
+    "path"
+  );
+  hamPath3.setAttribute("d", "M7.94971 35.9497H39.9497");
+
+  const pathAttributes = {
+    fill: "none",
+    stroke: "#2f3437",
+    "stroke-linecap": "round",
+    "stroke-linejoin": "round",
+    "stroke-width": "4",
+    class: "arm",
+  };
+
+  let armArray = [hamPath1, hamPath2, hamPath3];
+  armArray.forEach((arm) => {
+    Object.entries(pathAttributes).forEach((attribute) => {
+      let [attributeName, attributeValue] = attribute;
+      arm.setAttribute(attributeName, attributeValue);
+    });
+    hamSVG.appendChild(arm);
+  });
+  hamButton.appendChild(hamSVG);
+  headerElement.appendChild(hamButton);
+  const hamMenu = makeElements("div", { className: "hamMenu" });
+  Object.keys(navBarObject).forEach((category) => {
+    const btn = makeElements("div", {
+      className: "hamMenuBtn",
+      innerText: navBarObject[category].name,
+      id: category,
+    });
+    btn.addEventListener("click", (event) =>
+      mobileSubMenuGenerator(event, category, navBarObject)
+    );
+    hamMenu.appendChild(btn);
+  });
+  hamButton.addEventListener("click", () => {
+    if (menuOpen) {
+      hamMenu.style.display = "none";
+      menuOpen = false;
+      for (let i = 0; i < armArray.length; i++) {
+        armArray[i].classList.remove(`armAnim${i + 1}`);
+      }
+    } else {
+      hamMenu.style.display = "flex";
+      menuOpen = true;
+      for (let i = 0; i < armArray.length; i++) {
+        armArray[i].classList.add(`armAnim${i + 1}`);
+      }
+    }
+  });
+  return hamMenu;
+};
+
+/* DROPDOWN MENU DESKTOP! */
+let subMenuOpen = false;
 let menuElements = [];
 let btnId = 0;
-const subMenuGenerator = (event, category) => {
+const subMenuGenerator = (event, category, navBarObject) => {
   const selectedBtn = event.target;
-  if (menuOpen) {
+  if (subMenuOpen) {
+    return;
+  } else if (!navBarObject[category].subMenu) {
     return;
   } else {
     btnId = 0;
     const subMenu = makeElements("div", {
       className: "subMenu navDark sideBorders",
     });
-    Object.keys(navBarObject[category]).forEach((subCat) => {
+    Object.keys(navBarObject[category].subMenu).forEach((subCat) => {
       const btn = makeElements("button", {
         className: "btnTextOnly btnTextNoBold subMenuBtn",
         innerText: subCat,
@@ -189,17 +271,73 @@ const subMenuGenerator = (event, category) => {
       subMenu.addEventListener("mouseleave", () => subMenuRemover());
     });
     selectedBtn.appendChild(subMenu);
-    menuOpen = true;
+    subMenuOpen = true;
   }
 };
 const subMenuRemover = () => {
-  if (!menuOpen) return;
+  if (!subMenuOpen) return;
   else {
     menuElements.forEach((element) => element.remove());
     menuElements = [];
-    menuOpen = false;
+    subMenuOpen = false;
   }
 };
+
+const mobileSubMenuGenerator = (event, category, navBarObject) => {
+  const selectedBtn = event.target;
+  if (subMenuOpen) {
+    menuElements.forEach((element) => element.remove());
+    menuElements = [];
+    subMenuOpen = false;
+    if (selectedBtn != currentTarget) {
+      currentTarget = selectedBtn;
+      mobileSubMenuGenerator(event, category, navBarObject);
+    }
+  } else {
+    currentTarget = selectedBtn;
+    btnId = 0;
+    const subMenu = makeElements("div", {
+      className: "mobileSubMenu navDark",
+    });
+    Object.keys(navBarObject[category].subMenu).forEach((subCat) => {
+      const btn = makeElements("button", {
+        className: "btnTextOnly btnTextNoBold subMenuBtn",
+        innerText: subCat,
+        id: subCat,
+      });
+      btnId++;
+      btn.style.animationDelay = `${btnId * 25}ms`;
+      subMenu.appendChild(btn);
+      menuElements.push(subMenu);
+    });
+    selectedBtn.appendChild(subMenu);
+    subMenuOpen = true;
+  }
+};
+
+const mobileCheck = (navBarObject, headerElement) => {
+  if (window.navigator.userAgentData.mobile || window.innerWidth < 600)
+    return mobileButtonDisplay(navBarObject, headerElement);
+  else return desktopButtonDisplay(navBarObject);
+};
+
+window.addEventListener("change", (event) => {
+  navBarMaker();
+});
+
+const navBarMaker = async () => {
+  const navBarObject = await fetchNavBarObject();
+  const headerElement = makeElements("header", { className: "navBar navDark" });
+  const logoContainer = makeElements("div", { className: "logoContainer" });
+  const logo = makeElements("img", { src: "./img/logo.svg" });
+  logoContainer.appendChild(logo);
+  headerElement.appendChild(logoContainer);
+  const navBtnContainer = mobileCheck(navBarObject, headerElement);
+  headerElement.appendChild(navBtnContainer);
+  document.body.prepend(headerElement);
+};
+
+await navBarMaker();
 
 /* NAVBAR END */
 //monsterCard image maker
@@ -210,73 +348,81 @@ cardImage.setAttribute("height", "300");
 cardImgContainer.appendChild(cardImage);
 
 //monsterCard text content maker
-const monsterName = document.createElement("h1")
-const monsterSize = document.createElement("p")
-const monsterArmor = document.createElement("p")
-const monsterHP = document.createElement("p")
-const monsterSpeed = document.createElement("p")
-const monsterStats = document.createElement("p")
-const monsterSkill = document.createElement("p")
-const monsterSense = document.createElement("p")
-const monsterLanguage = document.createElement("p")
-const monsterExp = document.createElement("p")
-const monsterProficiencyBonus = document.createElement("p")
-const monsterSpecialAbility = document.createElement("p")
-const monsterAction = document.createElement("p")
-const monsterDescription = document.createElement("p")
-monsterName.textContent = `${monsterExample.name}`
-cardTextContainer.appendChild(monsterName)
+const monsterName = document.createElement("h1");
+const monsterSize = document.createElement("p");
+const monsterArmor = document.createElement("p");
+const monsterHP = document.createElement("p");
+const monsterSpeed = document.createElement("p");
+const monsterStats = document.createElement("p");
+const monsterSkill = document.createElement("p");
+const monsterSense = document.createElement("p");
+const monsterLanguage = document.createElement("p");
+const monsterExp = document.createElement("p");
+const monsterProficiencyBonus = document.createElement("p");
+const monsterSpecialAbility = document.createElement("p");
+const monsterAction = document.createElement("p");
+const monsterDescription = document.createElement("p");
+monsterName.textContent = `${monsterExample.name}`;
+cardTextContainer.appendChild(monsterName);
 
 //size, race and alignment display
-monsterSize.textContent = `${monsterExample.size}, ${monsterExample.type}, ${monsterExample.alignment}`
-cardTextContainer.appendChild(monsterSize)
+monsterSize.textContent = `${monsterExample.size}, ${monsterExample.type}, ${monsterExample.alignment}`;
+cardTextContainer.appendChild(monsterSize);
 
 //create armor information
-monsterArmor.textContent = `Armor Class ${monsterExample.armor_class[0].value}`
-cardTextContainer.appendChild(monsterArmor)
+monsterArmor.textContent = `Armor Class ${monsterExample.armor_class[0].value}`;
+cardTextContainer.appendChild(monsterArmor);
 
 //hit points display
-monsterHP.textContent = `Hit Point ${monsterExample.hit_points} (${monsterExample.hit_points_roll})`
-cardTextContainer.appendChild(monsterHP)
+monsterHP.textContent = `Hit Point ${monsterExample.hit_points} (${monsterExample.hit_points_roll})`;
+cardTextContainer.appendChild(monsterHP);
 
 //speed value display
-monsterSpeed.textContent = `Speed ${monsterExample.speed.walk}`
-cardTextContainer.appendChild(monsterSpeed)
+monsterSpeed.textContent = `Speed ${monsterExample.speed.walk}`;
+cardTextContainer.appendChild(monsterSpeed);
 
 //Monster stats display
-monsterStats.textContent = `STR ${monsterExample.strength} DEX ${monsterExample.dexterity} CON ${monsterExample.constitution} INT ${monsterExample.intelligence} WIS ${monsterExample.wisdom} CHA ${monsterExample.charisma}`
-cardTextContainer.appendChild(monsterStats)
+monsterStats.textContent = `STR ${monsterExample.strength} DEX ${monsterExample.dexterity} CON ${monsterExample.constitution} INT ${monsterExample.intelligence} WIS ${monsterExample.wisdom} CHA ${monsterExample.charisma}`;
+cardTextContainer.appendChild(monsterStats);
 
 //Monster skill display
 //fix a better method which makes it able to register monster with more than 2 skills
-monsterSkill.textContent = `Skills ${monsterExample.proficiencies[0].proficiency.name.slice(6)} +${monsterExample.proficiencies[0].value}, ${monsterExample.proficiencies[1].proficiency.name.slice(6)} +${monsterExample.proficiencies[1].value}`
-cardTextContainer.appendChild(monsterSkill)
+monsterSkill.textContent = `Skills ${monsterExample.proficiencies[0].proficiency.name.slice(
+  6
+)} +${
+  monsterExample.proficiencies[0].value
+}, ${monsterExample.proficiencies[1].proficiency.name.slice(6)} +${
+  monsterExample.proficiencies[1].value
+}`;
+cardTextContainer.appendChild(monsterSkill);
 
 //Monster sense Display
 // find a way to remove "_" in propertynames
-monsterSense.textContent = `Senses ${Object.getOwnPropertyNames(monsterExample.senses)} ${Object.values(monsterExample.senses)}`;
-cardTextContainer.appendChild(monsterSense)
+monsterSense.textContent = `Senses ${Object.getOwnPropertyNames(
+  monsterExample.senses
+)} ${Object.values(monsterExample.senses)}`;
+cardTextContainer.appendChild(monsterSense);
 
 //Monster Language Display
-monsterLanguage.textContent = `Languages ${monsterExample.languages}`
-cardTextContainer.appendChild(monsterLanguage)
+monsterLanguage.textContent = `Languages ${monsterExample.languages}`;
+cardTextContainer.appendChild(monsterLanguage);
 
 //Monster xp and challenge rating
-monsterExp.textContent = `Challenge ${monsterExample.challenge_rating} (${monsterExample.xp} XP)`
-cardTextContainer.appendChild(monsterExp)
+monsterExp.textContent = `Challenge ${monsterExample.challenge_rating} (${monsterExample.xp} XP)`;
+cardTextContainer.appendChild(monsterExp);
 
 //Monster proficiency bonus display
-monsterProficiencyBonus.textContent = `Proficiency Bonus +${monsterExample.proficiency_bonus}`
-cardTextContainer.appendChild(monsterProficiencyBonus)
+monsterProficiencyBonus.textContent = `Proficiency Bonus +${monsterExample.proficiency_bonus}`;
+cardTextContainer.appendChild(monsterProficiencyBonus);
 
 //Monster Special ability
-monsterSpecialAbility.textContent = `${monsterExample.special_abilities[0].name} ${monsterExample.special_abilities[0].desc}`
-cardTextContainer.appendChild(monsterSpecialAbility)
+monsterSpecialAbility.textContent = `${monsterExample.special_abilities[0].name} ${monsterExample.special_abilities[0].desc}`;
+cardTextContainer.appendChild(monsterSpecialAbility);
 
 //Monster Action
-monsterAction.textContent = `Action ${monsterExample.actions[0].name} ${monsterExample.actions[0].desc}`
-cardTextContainer.appendChild(monsterAction)
+monsterAction.textContent = `Action ${monsterExample.actions[0].name} ${monsterExample.actions[0].desc}`;
+cardTextContainer.appendChild(monsterAction);
 
 //Monster descprtion
-monsterDescription.textContent = `Description ${monsterExample.desc}`
-cardTextContainer.appendChild(monsterDescription)
+monsterDescription.textContent = `Description ${monsterExample.desc}`;
+cardTextContainer.appendChild(monsterDescription);

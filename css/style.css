@@ -17,6 +17,7 @@ body {
     ". info info . ";
   grid-template-rows: 6rem 1fr;
   height: 100vh;
+  background: var(--dark);
 }
 
 /* TEXT CLASSER */
@@ -48,7 +49,6 @@ body {
   place-self: center;
   /*IKKE GJØR SOM JOHN SIER*/
 }
-
 .darkMode {
   background-color: var(--dark);
   color: var(--light);
@@ -62,10 +62,11 @@ body {
 
 .navBar {
   grid-area: nav;
+  position: relative;
   display: flex;
   width: 100vw;
   justify-content: space-around;
-  align-items: center;
+  align-items: end;
 }
 
 .logoContainer {
@@ -78,7 +79,7 @@ body {
 .navBtnContainer {
   width: 55%;
   display: flex;
-  padding: 10px;
+  padding: 10px 10px 0 10px;
   justify-content: space-around;
 }
 .btnTextOnly {
@@ -134,4 +135,57 @@ body {
     position: static;
     opacity: 100%;
   }
+}
+.hamBtn {
+  z-index: 3;
+}
+
+.hamMenu {
+  display: none;
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  padding: 100px 20px;
+  gap: 20px;
+  width: 50vw;
+  height: 100vh;
+  background: var(--light);
+  right: 0;
+  top: 0;
+  z-index: 2;
+}
+.mobileSubMenu {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: 10px;
+}
+.arm {
+  transition: 300ms ease-in;
+}
+
+.armAnim1 {
+  transform: translate(16px) rotate(45deg);
+}
+.armAnim2 {
+  opacity: 0%;
+}
+.armAnim3 {
+  transform: translate(-18px, 17px) rotate(-45deg);
+}
+.startPage {
+  display: none;
+  grid-area: info;
+  max-width: 1000px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+}
+.startPageLogo {
+  width: 90%;
+}
+.startPageLogo img {
+  width: 100%;
 }
