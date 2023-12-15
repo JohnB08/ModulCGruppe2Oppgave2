@@ -43,10 +43,24 @@ body {
 /* -------- */
 
 .info-card {
-  display: none;
+  /* display: none; */
   grid-area: info;
   place-self: center;
   /*IKKE GJØR SOM JOHN SIER*/
+}
+span{
+  font-weight: bold;
+}
+.stats{
+  display: grid;
+  grid-template-areas: "str nr"
+  "dex nr"
+  "con nr"
+  "int nr"
+  "wis nr"
+  "cha nr";
+margin-right: 98%;
+
 }
 
 .darkMode {

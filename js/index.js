@@ -228,55 +228,84 @@ monsterName.textContent = `${monsterExample.name}`
 cardTextContainer.appendChild(monsterName)
 
 //size, race and alignment display
-monsterSize.textContent = `${monsterExample.size}, ${monsterExample.type}, ${monsterExample.alignment}`
+monsterSize.textContent = `${monsterExample.size}, ${monsterExample.type}, ${monsterExample.alignment}`;
 cardTextContainer.appendChild(monsterSize)
 
 //create armor information
-monsterArmor.textContent = `Armor Class ${monsterExample.armor_class[0].value}`
+monsterArmor.innerHTML = `<span>Armor Class</span> ${monsterExample.armor_class[0].value}`;
 cardTextContainer.appendChild(monsterArmor)
 
 //hit points display
-monsterHP.textContent = `Hit Point ${monsterExample.hit_points} (${monsterExample.hit_points_roll})`
+monsterHP.innerHTML = `<span>Hit Point</span> ${monsterExample.hit_points} (${monsterExample.hit_points_roll})`;
 cardTextContainer.appendChild(monsterHP)
 
 //speed value display
-monsterSpeed.textContent = `Speed ${monsterExample.speed.walk}`
+monsterSpeed.innerHTML = `<span>Speed</span> ${monsterExample.speed.walk}`;
 cardTextContainer.appendChild(monsterSpeed)
 
 //Monster stats display
-monsterStats.textContent = `STR ${monsterExample.strength} DEX ${monsterExample.dexterity} CON ${monsterExample.constitution} INT ${monsterExample.intelligence} WIS ${monsterExample.wisdom} CHA ${monsterExample.charisma}`
+monsterStats.innerHTML = `<div class=stats>
+<span>STR:</span> ${monsterExample.strength} 
+<span>DEX:</span> ${monsterExample.dexterity} 
+<span>CON:</span> ${monsterExample.constitution} 
+<span>INT:</span> ${monsterExample.intelligence} 
+<span>WIS: </span> ${monsterExample.wisdom} 
+<span>CHA:</span> ${monsterExample.charisma}
+</div>`;
 cardTextContainer.appendChild(monsterStats)
 
 //Monster skill display
 //fix a better method which makes it able to register monster with more than 2 skills
-monsterSkill.textContent = `Skills ${monsterExample.proficiencies[0].proficiency.name.slice(6)} +${monsterExample.proficiencies[0].value}, ${monsterExample.proficiencies[1].proficiency.name.slice(6)} +${monsterExample.proficiencies[1].value}`
+monsterSkill.innerHTML = `<span>Skills</span> ${monsterExample.proficiencies[0].proficiency.name.slice(
+  6
+)} +${
+  monsterExample.proficiencies[0].value
+}, ${monsterExample.proficiencies[1].proficiency.name.slice(6)} +${
+  monsterExample.proficiencies[1].value
+}`;
 cardTextContainer.appendChild(monsterSkill)
 
 //Monster sense Display
 // find a way to remove "_" in propertynames
-monsterSense.textContent = `Senses ${Object.getOwnPropertyNames(monsterExample.senses)} ${Object.values(monsterExample.senses)}`;
+monsterSense.innerHTML = `<span>Senses</span> ${Object.getOwnPropertyNames(
+  monsterExample.senses
+)} ${Object.values(monsterExample.senses)}`;
 cardTextContainer.appendChild(monsterSense)
 
 //Monster Language Display
-monsterLanguage.textContent = `Languages ${monsterExample.languages}`
+monsterLanguage.innerHTML = `<span>Languages</span> ${monsterExample.languages}`;
 cardTextContainer.appendChild(monsterLanguage)
 
 //Monster xp and challenge rating
-monsterExp.textContent = `Challenge ${monsterExample.challenge_rating} (${monsterExample.xp} XP)`
+monsterExp.innerHTML = `<span>Challenge</span> ${monsterExample.challenge_rating} (${monsterExample.xp} XP)`;
 cardTextContainer.appendChild(monsterExp)
 
 //Monster proficiency bonus display
-monsterProficiencyBonus.textContent = `Proficiency Bonus +${monsterExample.proficiency_bonus}`
+monsterProficiencyBonus.innerHTML = `<span>Proficiency Bonus</span> +${monsterExample.proficiency_bonus}`;
 cardTextContainer.appendChild(monsterProficiencyBonus)
 
 //Monster Special ability
-monsterSpecialAbility.textContent = `${monsterExample.special_abilities[0].name} ${monsterExample.special_abilities[0].desc}`
+monsterSpecialAbility.innerHTML = `<span>${monsterExample.special_abilities[0].name}</span> ${monsterExample.special_abilities[0].desc}`;
 cardTextContainer.appendChild(monsterSpecialAbility)
 
 //Monster Action
-monsterAction.textContent = `Action ${monsterExample.actions[0].name} ${monsterExample.actions[0].desc}`
+monsterAction.innerHTML = `<span>Action</span> ${monsterExample.actions[0].name} ${monsterExample.actions[0].desc}`;
 cardTextContainer.appendChild(monsterAction)
 
 //Monster descprtion
-monsterDescription.textContent = `Description ${monsterExample.desc}`
+monsterDescription.innerHTML = `<span>Description</span> ${monsterExample.desc}`
 cardTextContainer.appendChild(monsterDescription)
+
+
+////ble ble problematisk med objekter inni objektet
+// Object.entries(monsterExample).forEach((attribute) => {
+//   let [attributeName, attributeValue] = attribute;
+//   attributeName = attributeName.includes("_")
+//     ? attributeName.split("_").join(" ")
+//     : attributeName;
+//   const Description = `${attributeName}: ${attributeValue}`;
+//   console.log(Description);
+//   const descriptionText = document.createElement("p")
+//   descriptionText.textContent = Description
+//   cardTextContainer.appendChild(descriptionText)
+// });
