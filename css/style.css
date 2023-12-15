@@ -62,6 +62,7 @@ body {
 
 .navBar {
   grid-area: nav;
+  position: relative;
   display: flex;
   width: 100vw;
   justify-content: space-around;
@@ -134,4 +135,22 @@ body {
     position: static;
     opacity: 100%;
   }
+}
+.hamBtn {
+  z-index: 3;
+}
+
+.hamMenu {
+  display: none;
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  padding: 100px 20px;
+  gap: 20px;
+  width: 50vw;
+  height: 100vh;
+  background: var(--light);
+  right: 0;
+  top: 0;
+  z-index: 2;
 }

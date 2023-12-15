@@ -141,17 +141,7 @@ const fetchNavBarObject = async () => {
   return navBarObject;
 };
 let menuOpen = false;
-const navBarMaker = async () => {
-  const navBarObject = await fetchNavBarObject();
-  const headerElement = makeElements("header", { className: "navBar navDark" });
-  const logoContainer = makeElements("div", { className: "logoContainer" });
-  const logo = makeElements("img", { src: "./img/logo.svg" });
-  logoContainer.appendChild(logo);
-  headerElement.appendChild(logoContainer);
-  const navBtnContainer = desktopButtonDisplay(navBarObject);
-  headerElement.appendChild(navBtnContainer);
-  document.body.prepend(headerElement);
-};
+let currentTarget = "";
 
 const desktopButtonDisplay = (navBarObject) => {
   const navBtnContainer = makeElements("div", {
@@ -176,7 +166,72 @@ const desktopButtonDisplay = (navBarObject) => {
   return navBtnContainer;
 };
 
-await navBarMaker();
+const mobileButtonDisplay = (navBarObject, headerElement) => {
+  const hamButton = makeElements("div", { className: "hamBtn" });
+  const hamSVG = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  const svgAttributes = {
+    width: "3em",
+    height: "3em",
+    viewBox: "0 0 48 48",
+  };
+  Object.entries(svgAttributes).forEach((attribute) => {
+    let [attributeName, attributeValue] = attribute;
+    hamSVG.setAttribute(attributeName, attributeValue);
+  });
+  const hamPath1 = document.createElementNS(
+    "http://www.w3.org/2000/svg",
+    "path"
+  );
+  hamPath1.setAttribute("d", "M7.94971 11.9497H39.9497");
+  const hamPath2 = document.createElementNS(
+    "http://www.w3.org/2000/svg",
+    "path"
+  );
+  hamPath2.setAttribute("d", "M7.94971 23.9497H39.9497");
+  const hamPath3 = document.createElementNS(
+    "http://www.w3.org/2000/svg",
+    "path"
+  );
+  hamPath3.setAttribute("d", "M7.94971 35.9497H39.9497");
+
+  const pathAttributes = {
+    fill: "none",
+    stroke: "#2f3437",
+    "stroke-linecap": "round",
+    "stroke-linejoin": "round",
+    "stroke-width": "4",
+    class: "arm",
+  };
+
+  let armArray = [hamPath1, hamPath2, hamPath3];
+  armArray.forEach((arm) => {
+    Object.entries(pathAttributes).forEach((attribute) => {
+      let [attributeName, attributeValue] = attribute;
+      arm.setAttribute(attributeName, attributeValue);
+    });
+    hamSVG.appendChild(arm);
+  });
+  hamButton.appendChild(hamSVG);
+  headerElement.appendChild(hamButton);
+  const hamMenu = makeElements("div", { className: "hamMenu" });
+  Object.keys(navBarObject).forEach((category) => {
+    const btn = makeElements("div", {
+      className: "hamMenuBtn",
+      innerText: navBarObject[category].name,
+      id: category,
+    });
+    btn.addEventListener("click", (event) =>
+      mobileSubMenuGenerator(event, category, navBarObject)
+    );
+    hamMenu.appendChild(btn);
+  });
+  hamButton.addEventListener("click", () => {
+    menuOpen
+      ? ((hamMenu.style.display = "none"), (menuOpen = false))
+      : ((hamMenu.style.display = "flex"), (menuOpen = true));
+  });
+  return hamMenu;
+};
 
 /* DROPDOWN MENU DESKTOP! */
 let subMenuOpen = false;
@@ -220,11 +275,16 @@ const subMenuRemover = () => {
 
 const mobileSubMenuGenerator = (event, category, navBarObject) => {
   const selectedBtn = event.target;
-  if (!subMenuOpen) {
+  if (subMenuOpen) {
     menuElements.forEach((element) => element.remove());
     menuElements = [];
     subMenuOpen = false;
+    if (selectedBtn != currentTarget) {
+      currentTarget = selectedBtn;
+      mobileSubMenuGenerator(event, category, navBarObject);
+    }
   } else {
+    currentTarget = selectedBtn;
     btnId = 0;
     const subMenu = makeElements("div", {
       className: "mobileSubMenu navDark",
@@ -239,12 +299,35 @@ const mobileSubMenuGenerator = (event, category, navBarObject) => {
       btn.style.animationDelay = `${btnId * 25}ms`;
       subMenu.appendChild(btn);
       menuElements.push(subMenu);
-      subMenu.addEventListener("mouseleave", () => subMenuRemover());
     });
     selectedBtn.appendChild(subMenu);
     subMenuOpen = true;
   }
 };
+
+const mobileCheck = (navBarObject, headerElement) => {
+  if (window.navigator.userAgentData.mobile || window.innerWidth < 600)
+    return mobileButtonDisplay(navBarObject, headerElement);
+  else return desktopButtonDisplay(navBarObject);
+};
+
+window.addEventListener("change", (event) => {
+  navBarMaker();
+});
+
+const navBarMaker = async () => {
+  const navBarObject = await fetchNavBarObject();
+  const headerElement = makeElements("header", { className: "navBar navDark" });
+  const logoContainer = makeElements("div", { className: "logoContainer" });
+  const logo = makeElements("img", { src: "./img/logo.svg" });
+  logoContainer.appendChild(logo);
+  headerElement.appendChild(logoContainer);
+  const navBtnContainer = mobileCheck(navBarObject, headerElement);
+  headerElement.appendChild(navBtnContainer);
+  document.body.prepend(headerElement);
+};
+
+await navBarMaker();
 
 /* NAVBAR END */
 //monsterCard image maker
