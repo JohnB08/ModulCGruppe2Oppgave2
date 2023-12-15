@@ -226,9 +226,19 @@ const mobileButtonDisplay = (navBarObject, headerElement) => {
     hamMenu.appendChild(btn);
   });
   hamButton.addEventListener("click", () => {
-    menuOpen
-      ? ((hamMenu.style.display = "none"), (menuOpen = false))
-      : ((hamMenu.style.display = "flex"), (menuOpen = true));
+    if (menuOpen) {
+      hamMenu.style.display = "none";
+      menuOpen = false;
+      for (let i = 0; i < armArray.length; i++) {
+        armArray[i].classList.remove(`armAnim${i + 1}`);
+      }
+    } else {
+      hamMenu.style.display = "flex";
+      menuOpen = true;
+      for (let i = 0; i < armArray.length; i++) {
+        armArray[i].classList.add(`armAnim${i + 1}`);
+      }
+    }
   });
   return hamMenu;
 };

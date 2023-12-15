@@ -154,3 +154,22 @@ body {
   top: 0;
   z-index: 2;
 }
+.mobileSubMenu {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: 10px;
+}
+.arm {
+  transition: 300ms ease-in;
+}
+
+.armAnim1 {
+  transform: translate(16px) rotate(45deg);
+}
+.armAnim2 {
+  opacity: 0%;
+}
+.armAnim3 {
+  transform: translate(-18px, 17px) rotate(-45deg);
+}
