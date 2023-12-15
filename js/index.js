@@ -340,6 +340,13 @@ const navBarMaker = async () => {
 await navBarMaker();
 
 /* NAVBAR END */
+
+/* Search method start */
+
+
+
+/* Search method end */
+
 //monsterCard image maker
 const cardImage = document.createElement("img");
 cardImage.src = apiURL + monsterExample.image;
