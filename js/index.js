@@ -164,10 +164,13 @@ const searchFunction = async (string) => {
     searchAPIURL + normalizedString + "&document_slug=wotc-srd"
   );
   results.results.forEach(async (result) => {
-    const name = result.name.toLowerCase();
+    console.log(results);
+    let name = result.name.toLowerCase();
+    if (name === "weapons" || name === "armor") name = normalizedString;
     const normalizedName = name.split(" ").join("-");
     let index = result.route.toLowerCase();
-    if (index == "magicitems/") index = "magic-items/";
+    if (index === "magicitems/") index = "magic-items/";
+    if (index === "sections/") index = "equipment/";
     const newSearchApi = `${apiURL}/api/${index}${normalizedName}`;
     const searchResult = await fetchApi(newSearchApi);
     allResults.push(searchResult);
