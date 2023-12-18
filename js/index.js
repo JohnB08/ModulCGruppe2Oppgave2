@@ -152,15 +152,6 @@ const fetchNavBarObject = async () => {
 let menuOpen = false;
 let currentTarget = "";
 
-const searchBarArrayMaker = async () => {
-  const searchBarArray = [];
-  Object.keys(indexExample).forEach(async (category) => {
-    const searchIndex = await fetchApi(apiURL + indexExample[category]);
-    searchBarArray.push(searchIndex.results);
-  });
-  return searchBarArray;
-};
-
 /**
  * Bruker en annen api, og normaliserer til vår api for å lage en søkefunksjon. Vår valgte API mangler enkel søkefunksjon.
  * @param {*} string input
