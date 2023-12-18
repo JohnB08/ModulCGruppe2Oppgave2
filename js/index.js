@@ -3,8 +3,12 @@ const fetchApi = async (url) => {
     //dette objektet er med fordi API må vite at vi vil ha en json fil tilbake
     accept: "application/json",
   });
-  const result = await response.json();
-  return result;
+  if (!response.ok) {
+    return "Nothing Found!";
+  } else {
+    const result = await response.json();
+    return result;
+  }
 };
 
 /* Dette er apiurlen vi legger alle andre url til inni objektet. */
@@ -25,6 +29,11 @@ const monsterExample = await fetchApi(monsterUrl);
 const cardImgContainer = document.querySelector(".card-img");
 
 const cardTextContainer = document.querySelector(".monster-stats");
+
+const searchBtn = document.querySelector(".searchBtn");
+const searchField = document.querySelector("#searchField");
+
+const searchAPIURL = "https://api.open5e.com/search/?text=";
 
 console.log(indexExample);
 console.log(allMonstersExample);
@@ -67,13 +76,13 @@ const makeElements = (type, parameters) => {
 /* For å lage en brukervennlig navbar må index fra API struktureres litt annerledes. */
 
 /* NAVBAR START*/
-console.log(window.navigator);
 /**
  * Lager et nytt object basert på API, strukturert så navBar i topp får fem knapper med hver sin undermeny.
  * er mye mer leslig en det orginale objektet.
  * @param {*} object tar inn indexen til API
  * @returns ferdig strukturert object.
  */
+
 const makeNavBarObject = async (object) => {
   const navBarObject = {};
   navBarObject.generalRules = {
@@ -142,6 +151,43 @@ const fetchNavBarObject = async () => {
 };
 let menuOpen = false;
 let currentTarget = "";
+
+const searchBarArrayMaker = async () => {
+  const searchBarArray = [];
+  Object.keys(indexExample).forEach(async (category) => {
+    const searchIndex = await fetchApi(apiURL + indexExample[category]);
+    searchBarArray.push(searchIndex.results);
+  });
+  return searchBarArray;
+};
+
+/**
+ * Bruker en annen api, og normaliserer til vår api for å lage en søkefunksjon. Vår valgte API mangler enkel søkefunksjon.
+ * @param {*} string input
+ * @returns
+ */
+const searchFunction = async (string) => {
+  const allResults = [];
+  const normalizedString = string.toLowerCase();
+  const results = await fetchApi(
+    searchAPIURL + normalizedString + "&document_slug=wotc-srd"
+  );
+  results.results.forEach(async (result) => {
+    const name = result.name.toLowerCase();
+    const normalizedName = name.split(" ").join("-");
+    let index = result.route.toLowerCase();
+    if (index == "magicitems/") index = "magic-items/";
+    const newSearchApi = `${apiURL}/api/${index}${normalizedName}`;
+    const searchResult = await fetchApi(newSearchApi);
+    allResults.push(searchResult);
+  });
+  return allResults;
+};
+
+searchBtn.addEventListener("click", async () => {
+  const results = await searchFunction(searchField.value);
+  console.log(results);
+});
 
 const desktopButtonDisplay = (navBarObject) => {
   const navBtnContainer = makeElements("div", {
@@ -340,12 +386,6 @@ const navBarMaker = async () => {
 await navBarMaker();
 
 /* NAVBAR END */
-
-/* Search method start */
-
-
-
-/* Search method end */
 
 //monsterCard image maker
 const cardImage = document.createElement("img");
