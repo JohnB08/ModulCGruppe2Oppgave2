@@ -14,8 +14,10 @@ body {
   display: grid;
   grid-template-areas:
     "nav nav nav nav"
+    ". info info search "
+    ". info info . "
     ". info info . ";
-  grid-template-rows: 6rem 1fr;
+  grid-template-rows: 6rem 4rem 1fr;
   height: 100vh;
   background: var(--dark);
 }
@@ -42,7 +44,12 @@ body {
 }
 
 /* -------- */
-
+.searchContainer {
+  grid-area: search;
+  place-self: start;
+  background-color: var(--light);
+  padding: 1rem 3rem;
+}
 .info-card {
   display: none;
   grid-area: info;
@@ -70,14 +77,14 @@ body {
 }
 
 .logoContainer {
-  width: 30%;
+  width: 20%;
 }
 .logoContainer img {
   width: 100%;
 }
 
 .navBtnContainer {
-  width: 55%;
+  width: 60%;
   display: flex;
   padding: 10px 10px 0 10px;
   justify-content: space-around;
@@ -143,7 +150,6 @@ body {
 .hamMenu {
   display: none;
   position: absolute;
-  display: flex;
   flex-direction: column;
   padding: 100px 20px;
   gap: 20px;
@@ -178,7 +184,6 @@ body {
   grid-area: info;
   max-width: 1000px;
   text-align: center;
-  display: flex;
   flex-direction: column;
   justify-content: space-evenly;
   align-items: center;
@@ -188,4 +193,32 @@ body {
 }
 .startPageLogo img {
   width: 100%;
+}
+
+@media only screen and (max-width: 600px) {
+  body {
+    grid-template-areas:
+      "nav nav nav nav"
+      "search search search search"
+      ". info info. "
+      ". info info .";
+  }
+  .descriptionText {
+    font-size: 16px;
+  }
+  .headerText {
+    font-size: 36px;
+  }
+  .subHeaderText {
+    font-size: 18px;
+  }
+  .btnText {
+    font-size: 12px;
+  }
+  .btnTextNoBold {
+    font-size: 12px;
+  }
+  .logoContainer {
+    width: 50%;
+  }
 }
