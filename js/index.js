@@ -159,7 +159,9 @@ let currentTarget = "";
  */
 const searchFunction = async (string) => {
   const allResults = [];
-  const normalizedString = string.toLowerCase();
+  //Mindre nøyaktig søkefunksjon, går via en annen api. gir flere resultater, men mangler mye.
+  /*
+  const normalizedString = string.toLowerCase();   
   const results = await fetchApi(
     searchAPIURL + normalizedString + "&document_slug=wotc-srd"
   );
@@ -174,6 +176,16 @@ const searchFunction = async (string) => {
     const newSearchApi = `${apiURL}/api/${index}${normalizedName}`;
     const searchResult = await fetchApi(newSearchApi);
     allResults.push(searchResult);
+  }); */
+
+  //Mer direkte søkefunksjon, men søket må være svært nøyaktig.
+  const normalizedString = string.toLowerCase().split(" ").join("-");
+  Object.keys(indexExample).forEach(async (category) => {
+    const result = await fetchApi(
+      `${apiURL}/api/${category}/${normalizedString}`
+    );
+    if (result === "Nothing Found!") return;
+    else allResults.push(result);
   });
   return allResults;
 };
