@@ -18,7 +18,7 @@ body {
     ". info info . "
     ". info info . ";
   grid-template-rows: 6rem 4rem 1fr;
-  height: 100vh;
+  height: auto;
   background: var(--dark);
 }
 
@@ -193,6 +193,22 @@ body {
 }
 .startPageLogo img {
   width: 100%;
+}
+
+.resultScreen {
+  grid-area: info;
+  place-self: center;
+  display: flex;
+  flex-direction: column;
+  max-width: 1000px;
+  max-height: 80vh;
+  overflow-y: scroll;
+}
+
+.resultName {
+  border: 0;
+  text-align: start;
+  margin-bottom: 0.5rem;
 }
 
 @media only screen and (max-width: 600px) {

@@ -24,7 +24,9 @@ const allMonstersExample = await fetchApi(allMonstersUrl);
 
 const monsterUrl = "https://www.dnd5eapi.co/api/monsters/acolyte";
 
-const monsterExample = await fetchApi(monsterUrl);
+let monsterExample = await fetchApi(monsterUrl);
+
+const infoCard = document.querySelector(".info-card");
 
 const cardImgContainer = document.querySelector(".card-img");
 
@@ -133,7 +135,9 @@ const makeNavBarObject = async (object) => {
   };
   return navBarObject;
 };
-
+const setActiveMonster = async (monsterURL) => {
+  monsterExample = await fetchApi(apiURL + monsterURL);
+};
 /**
  * ser om navbar allerede er lagret i localStorage, så siden slipper å gjøre en ny API call.
  * Siden navbar er ganske statisk føler jeg dette er en god måte å gjøre det på. det gjør at
@@ -151,6 +155,7 @@ const fetchNavBarObject = async () => {
 };
 let menuOpen = false;
 let currentTarget = "";
+let allResults = [];
 
 /**
  * Bruker en annen api, og normaliserer til vår api for å lage en søkefunksjon. Vår valgte API mangler enkel søkefunksjon.
@@ -158,15 +163,15 @@ let currentTarget = "";
  * @returns
  */
 const searchFunction = async (string) => {
-  const allResults = [];
+  let existingSearch = document.querySelector(".resultScreen");
+  if (existingSearch) existingSearch.remove();
+  const resultContainer = makeElements("div", { className: "resultScreen" });
   //Mindre nøyaktig søkefunksjon, går via en annen api. gir flere resultater, men mangler mye.
-  /*
-  const normalizedString = string.toLowerCase();   
+  const normalizedString = string.toLowerCase();
   const results = await fetchApi(
     searchAPIURL + normalizedString + "&document_slug=wotc-srd"
   );
   results.results.forEach(async (result) => {
-    console.log(results);
     let name = result.name.toLowerCase();
     if (name === "weapons" || name === "armor") name = normalizedString;
     const normalizedName = name.split(" ").join("-");
@@ -175,9 +180,44 @@ const searchFunction = async (string) => {
     if (index === "sections/") index = "equipment/";
     const newSearchApi = `${apiURL}/api/${index}${normalizedName}`;
     const searchResult = await fetchApi(newSearchApi);
-    allResults.push(searchResult);
-  }); */
-
+    if (searchResult === "Nothing Found!") return;
+    else {
+      console.log(searchResult);
+      const resultName = makeElements("button", {
+        className: "resultName descriptionText darkMode",
+        innerText: searchResult.name,
+        value: searchResult.url,
+      });
+      resultName.addEventListener("click", async () => {
+        await setActiveMonster(resultName.value);
+        resultContainer.remove();
+        infoCard.style.display = "block";
+        history.pushState({ page_id: "displayMonster" }, "");
+      });
+      resultContainer.appendChild(resultName);
+      if (!searchResult.desc) return;
+      else {
+        if (searchResult.desc === []) {
+          for (let desc of searchResult.desc) {
+            const resultDesc = makeElements("p", {
+              className: "resultName buttonText darkMode",
+              innerText: desc,
+            });
+            resultContainer.appendChild(resultDesc);
+          }
+        } else {
+          const resultDesc = makeElements("p", {
+            className: "resultName buttonText darkMode",
+            innerText: searchResult.desc,
+          });
+          resultContainer.appendChild(resultDesc);
+        }
+        document.body.appendChild(resultContainer);
+        history.pushState({ page_id: "search" }, "");
+      }
+    }
+  });
+  /* 
   //Mer direkte søkefunksjon, men søket må være svært nøyaktig.
   const normalizedString = string.toLowerCase().split(" ").join("-");
   Object.keys(indexExample).forEach(async (category) => {
@@ -186,14 +226,13 @@ const searchFunction = async (string) => {
     );
     if (result === "Nothing Found!") return;
     else allResults.push(result);
-  });
-  return allResults;
+  }); */
 };
 
-searchBtn.addEventListener("click", async () => {
-  const results = await searchFunction(searchField.value);
-  console.log(results);
-});
+searchBtn.addEventListener(
+  "click",
+  async () => await searchFunction(searchField.value)
+);
 
 const desktopButtonDisplay = (navBarObject) => {
   const navBtnContainer = makeElements("div", {
@@ -372,10 +411,6 @@ const mobileCheck = (navBarObject, headerElement) => {
     return mobileButtonDisplay(navBarObject, headerElement);
   else return desktopButtonDisplay(navBarObject);
 };
-
-window.addEventListener("change", (event) => {
-  navBarMaker();
-});
 
 const navBarMaker = async () => {
   const navBarObject = await fetchNavBarObject();
