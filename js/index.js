@@ -222,7 +222,7 @@ const searchFunction = async (string) => {
           }
         } else {
           const resultDesc = makeElements("p", {
-            className: "resultName buttonText darkMode",
+            className: "resultDesc buttonText darkMode",
             innerText: searchResult.desc,
           });
           resultScreen.appendChild(resultDesc);
