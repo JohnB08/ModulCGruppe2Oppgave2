@@ -23,6 +23,7 @@ const resultScreen = document.querySelector(".resultScreen");
 /* globale variabler */
 
 let activeScreen = startPage;
+let searchElements = [];
 
 /**
  * Setter hvilke div som skal vises til en hver tid.
@@ -62,6 +63,11 @@ let monsterExample = await fetchApi(monsterUrl);
 
 const searchAPIURL = "https://api.open5e.com/search/?text=";
 
+const test = await fetchApi(
+  apiURL + "/api/equipment-categories/adventuring-gear"
+);
+console.log(test);
+
 /* mekker NAVBAR */
 await navBarMaker();
 /* Søkefunksjoner */
@@ -72,11 +78,10 @@ await navBarMaker();
  * @returns
  */
 const searchFunction = async (string) => {
-  //Fjerner alle gamle "children" fra resultScreen
-  for (let child of resultScreen.children) {
-    child.remove();
-  }
-  setActiveScreen(resultScreen);
+  //Fjerner alle gamle "children" fra resultScreen og resetter searchElements
+  searchElements.forEach((element) => element.remove());
+  searchElements = [];
+  if (activeScreen !== resultScreen) setActiveScreen(resultScreen);
   //Mindre nøyaktig søkefunksjon, går via en annen api. gir flere resultater, men mangler mye.
   const normalizedString = string.toLowerCase();
   //Finner resultatet fra søkemotoren til searchAPI, limiter søket til innhold vår api har.
@@ -90,44 +95,19 @@ const searchFunction = async (string) => {
     const normalizedName = name.split(" ").join("-");
     let index = result.route.toLowerCase();
     if (index === "magicitems/") index = "magic-items/";
-    if (index === "sections/") index = "equipment/";
+    if (name !== normalizedString) {
+      index === "sections/" ? (index = "equipment-categories/") : index;
+    } else {
+      index = "equipment/";
+    }
+
     const newSearchApi = `${apiURL}/api/${index}${normalizedName}`;
     const searchResult = await fetchApi(newSearchApi);
     //passer på å ignorere de søkene hvor ingenting er funnet.
     if (searchResult === "Nothing Found!") return;
     //Lager nye child elementer til resultScreen basert på søkeresultatene.
     else {
-      const resultName = makeElements("button", {
-        className: "resultName descriptionText darkMode",
-        innerText: searchResult.name,
-        value: searchResult.url,
-      });
-      resultName.addEventListener("click", async () => {
-        await setActiveMonster(resultName.value);
-        displayMonsterInfo(monsterExample);
-        setActiveScreen(infoCard);
-        history.pushState({ page_id: "displayMonster" }, "");
-      });
-      resultScreen.appendChild(resultName);
-      if (!searchResult.desc) return;
-      else {
-        if (typeof searchResult.desc === "object") {
-          for (let desc of searchResult.desc) {
-            const resultDesc = makeElements("p", {
-              className: "resultDesc buttonText darkMode",
-              innerText: desc,
-            });
-            resultScreen.appendChild(resultDesc);
-          }
-        } else {
-          const resultDesc = makeElements("p", {
-            className: "resultDesc buttonText darkMode",
-            innerText: searchResult.desc,
-          });
-          resultScreen.appendChild(resultDesc);
-        }
-        history.pushState({ page_id: "search" }, "");
-      }
+      appendResults(searchResult, normalizedString);
     }
   });
   //Mer direkte søkefunksjon, men søket må være svært nøyaktig. dårlig brukeropplevelse.
@@ -140,6 +120,51 @@ const searchFunction = async (string) => {
     if (result === "Nothing Found!") return;
     else allResults.push(result);
   }); */
+};
+
+const appendResults = async (searchResult, string = "") => {
+  console.log(searchResult);
+  const resultName = makeElements("button", {
+    className: "resultName descriptionText darkMode",
+    innerText: searchResult.name,
+    value: searchResult.url,
+  });
+  resultName.addEventListener("click", async () => {
+    await setActiveMonster(resultName.value);
+    displayMonsterInfo(monsterExample);
+    setActiveScreen(infoCard);
+    history.pushState({ page_id: "displayMonster" }, "");
+  });
+  searchElements.push(resultName);
+  resultScreen.appendChild(resultName);
+  if (searchResult.equipment) {
+    searchResult.equipment.forEach(async (equipment) => {
+      if (!equipment.index.includes(string)) return;
+      else {
+        string = equipment.index;
+        const newSearch = await fetchApi(`${apiURL}/api/equipment/${string}`);
+        await appendResults(newSearch, string);
+      }
+    });
+  }
+  if (!searchResult.desc) return;
+  if (typeof searchResult.desc === "object") {
+    for (let desc of searchResult.desc) {
+      const resultDesc = makeElements("p", {
+        className: "resultDesc buttonText darkMode",
+        innerText: desc,
+      });
+      resultScreen.appendChild(resultDesc);
+      searchElements.push(resultDesc);
+    }
+  } else {
+    const resultDesc = makeElements("p", {
+      className: "resultDesc buttonText darkMode",
+      innerText: searchResult.desc,
+    });
+    resultScreen.appendChild(resultDesc);
+    searchElements.push(resultDesc);
+  }
 };
 
 //Eventlistener til søkeknappen

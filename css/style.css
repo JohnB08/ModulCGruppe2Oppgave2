@@ -191,6 +191,7 @@ body {
   display: none;
   grid-area: info;
   max-width: 1000px;
+  height: 60vh;
   text-align: center;
   flex-direction: column;
   justify-content: space-evenly;
