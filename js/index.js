@@ -212,17 +212,17 @@ const searchFunction = async (string) => {
       resultScreen.appendChild(resultName);
       if (!searchResult.desc) return;
       else {
-        if (searchResult.desc === []) {
+        if (typeof searchResult.desc === "object") {
           for (let desc of searchResult.desc) {
             const resultDesc = makeElements("p", {
-              className: "resultName buttonText darkMode",
+              className: "resultDesc buttonText darkMode",
               innerText: desc,
             });
             resultScreen.appendChild(resultDesc);
           }
         } else {
           const resultDesc = makeElements("p", {
-            className: "resultName buttonText darkMode",
+            className: "resultDesc buttonText darkMode",
             innerText: searchResult.desc,
           });
           resultScreen.appendChild(resultDesc);
