@@ -193,6 +193,7 @@ body {
   flex-direction: column;
   justify-content: space-evenly;
   align-items: center;
+  place-self: center;
 }
 .startPageLogo {
   width: 90%;
