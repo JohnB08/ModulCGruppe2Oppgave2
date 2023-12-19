@@ -202,13 +202,6 @@ const subMenuRemover = () => {
 };
 
 /* NAVBAR END */
-//monsterCard image maker
-const cardImage = document.createElement("img");
-cardImage.src = apiURL + monsterExample.image;
-cardImage.setAttribute("width", "400");
-cardImage.setAttribute("height", "300");
-cardImgContainer.appendChild(cardImage);
-
 //monsterCard text content maker
 const monsterName = document.createElement("h1")
 const monsterSize = document.createElement("p")
@@ -224,6 +217,15 @@ const monsterProficiencyBonus = document.createElement("p")
 const monsterSpecialAbility = document.createElement("p")
 const monsterAction = document.createElement("p")
 const monsterDescription = document.createElement("p")
+const cardImage = document.createElement("img");
+
+const displayMonsterInfo = (monsterExample)=> {
+//monsterCard image maker
+cardImage.src = apiURL + monsterExample.image;
+cardImage.setAttribute("width", "400");
+cardImage.setAttribute("height", "300");
+cardImgContainer.appendChild(cardImage);
+
 monsterName.textContent = `${monsterExample.name}`
 cardTextContainer.appendChild(monsterName)
 
@@ -295,9 +297,9 @@ cardTextContainer.appendChild(monsterAction)
 //Monster descprtion
 monsterDescription.innerHTML = `<span>Description</span> ${monsterExample.desc}`
 cardTextContainer.appendChild(monsterDescription)
+}
 
-
-////ble ble problematisk med objekter inni objektet
+////det ble problematisk med objekter inni objektet
 // Object.entries(monsterExample).forEach((attribute) => {
 //   let [attributeName, attributeValue] = attribute;
 //   attributeName = attributeName.includes("_")
