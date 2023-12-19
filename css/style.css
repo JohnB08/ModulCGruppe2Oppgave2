@@ -14,9 +14,12 @@ body {
   display: grid;
   grid-template-areas:
     "nav nav nav nav"
+    ". info info search "
+    ". info info . "
     ". info info . ";
-  grid-template-rows: 6rem 1fr;
+  grid-template-rows: 6rem 4rem 1fr;
   height: 100vh;
+  background: var(--dark);
 }
 
 /* TEXT CLASSER */
@@ -41,7 +44,12 @@ body {
 }
 
 /* -------- */
-
+.searchContainer {
+  grid-area: search;
+  place-self: start;
+  background-color: var(--light);
+  padding: 1rem 3rem;
+}
 .info-card {
   /* display: none; */
   grid-area: info;
@@ -49,21 +57,6 @@ body {
   background-image: url("img/monsterbackground.gif");
   /*IKKE GJØR SOM JOHN SIER*/
 }
-span{
-  font-weight: bold;
-}
-.stats{
-  display: grid;
-  grid-template-areas: "str nr"
-  "dex nr"
-  "con nr"
-  "int nr"
-  "wis nr"
-  "cha nr";
-margin-right: 98%;
-
-}
-
 .darkMode {
   background-color: var(--dark);
   color: var(--light);
@@ -77,23 +70,24 @@ margin-right: 98%;
 
 .navBar {
   grid-area: nav;
+  position: relative;
   display: flex;
   width: 100vw;
   justify-content: space-around;
-  align-items: center;
+  align-items: end;
 }
 
 .logoContainer {
-  width: 30%;
+  width: 20%;
 }
 .logoContainer img {
   width: 100%;
 }
 
 .navBtnContainer {
-  width: 55%;
+  width: 60%;
   display: flex;
-  padding: 10px;
+  padding: 10px 10px 0 10px;
   justify-content: space-around;
 }
 .btnTextOnly {
@@ -148,5 +142,84 @@ margin-right: 98%;
   0% {
     position: static;
     opacity: 100%;
+  }
+}
+.hamBtn {
+  z-index: 3;
+}
+
+.hamMenu {
+  display: none;
+  position: absolute;
+  flex-direction: column;
+  padding: 100px 20px;
+  gap: 20px;
+  width: 50vw;
+  height: 100vh;
+  background: var(--light);
+  right: 0;
+  top: 0;
+  z-index: 2;
+}
+.mobileSubMenu {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: 10px;
+}
+.arm {
+  transition: 300ms ease-in;
+}
+
+.armAnim1 {
+  transform: translate(16px) rotate(45deg);
+}
+.armAnim2 {
+  opacity: 0%;
+}
+.armAnim3 {
+  transform: translate(-18px, 17px) rotate(-45deg);
+}
+.startPage {
+  display: none;
+  grid-area: info;
+  max-width: 1000px;
+  text-align: center;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+}
+.startPageLogo {
+  width: 90%;
+}
+.startPageLogo img {
+  width: 100%;
+}
+
+@media only screen and (max-width: 600px) {
+  body {
+    grid-template-areas:
+      "nav nav nav nav"
+      "search search search search"
+      ". info info. "
+      ". info info .";
+  }
+  .descriptionText {
+    font-size: 16px;
+  }
+  .headerText {
+    font-size: 36px;
+  }
+  .subHeaderText {
+    font-size: 18px;
+  }
+  .btnText {
+    font-size: 12px;
+  }
+  .btnTextNoBold {
+    font-size: 12px;
+  }
+  .logoContainer {
+    width: 50%;
   }
 }
