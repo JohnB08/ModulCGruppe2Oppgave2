@@ -26,21 +26,26 @@ body {
 
 .headerText {
   font: bold 48px/50px "Open Sans", sans-serif;
+  letter-spacing: 105%;
 }
 
 .subHeaderText {
   font: bold 24px/28px "Open Sans", sans-serif;
+  letter-spacing: 105%;
 }
 .btnText {
-  font: bold 16px/24px "Open Sans", sans-serif;
+  font: bold 16px/32px "Open Sans", sans-serif;
+  letter-spacing: 110%;
 }
 
 .descriptionText {
   font: 24px/28px "Open Sans", sans-serif;
+  letter-spacing: 105%;
 }
 
 .btnTextNoBold {
   font: 16px/24px "Open Sans", sans-serif;
+  letter-spacing: 105%;
 }
 
 /* -------- */
@@ -212,6 +217,9 @@ body {
   padding: 0.25rem 0;
   text-align: start;
   margin: 0.5rem 0;
+}
+.resultDesc {
+  margin: 0.25rem 0;
 }
 
 @media only screen and (max-width: 600px) {
