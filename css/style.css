@@ -54,7 +54,6 @@ body {
   /* display: none; */
   grid-area: info;
   place-self: center;
-  background-image: url("img/monsterbackground.gif");
   /*IKKE GJØR SOM JOHN SIER*/
 }
 .darkMode {
