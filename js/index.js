@@ -24,7 +24,9 @@ const allMonstersExample = await fetchApi(allMonstersUrl);
 
 const monsterUrl = "https://www.dnd5eapi.co/api/monsters/acolyte";
 
-const monsterExample = await fetchApi(monsterUrl);
+let monsterExample = await fetchApi(monsterUrl);
+
+const infoCard = document.querySelector(".info-card");
 
 const cardImgContainer = document.querySelector(".card-img");
 
@@ -32,12 +34,16 @@ const cardTextContainer = document.querySelector(".monster-stats");
 
 const searchBtn = document.querySelector(".searchBtn");
 const searchField = document.querySelector("#searchField");
+const startPage = document.querySelector(".startPage");
+const resultScreen = document.querySelector(".resultScreen");
 
 const searchAPIURL = "https://api.open5e.com/search/?text=";
 
 console.log(indexExample);
 console.log(allMonstersExample);
 console.log(monsterExample);
+
+let activeScreen = startPage;
 
 /*
  *Alle funksjoner skal ta inn ett av eksemplene som parameter.
@@ -73,6 +79,17 @@ const makeElements = (type, parameters) => {
   });
   return element;
 };
+
+/**
+ * Setter hvilke div som skal vises til en hver tid.
+ * @param {*} screenElement hvilket element som skal vises.
+ */
+const setActiveScreen = (screenElement) => {
+  activeScreen.style.display = "none";
+  activeScreen = screenElement;
+  activeScreen.style.display = "flex";
+};
+
 /* For å lage en brukervennlig navbar må index fra API struktureres litt annerledes. */
 
 /* NAVBAR START*/
@@ -133,7 +150,9 @@ const makeNavBarObject = async (object) => {
   };
   return navBarObject;
 };
-
+const setActiveMonster = async (monsterURL) => {
+  monsterExample = await fetchApi(apiURL + monsterURL);
+};
 /**
  * ser om navbar allerede er lagret i localStorage, så siden slipper å gjøre en ny API call.
  * Siden navbar er ganske statisk føler jeg dette er en god måte å gjøre det på. det gjør at
@@ -151,15 +170,7 @@ const fetchNavBarObject = async () => {
 };
 let menuOpen = false;
 let currentTarget = "";
-
-const searchBarArrayMaker = async () => {
-  const searchBarArray = [];
-  Object.keys(indexExample).forEach(async (category) => {
-    const searchIndex = await fetchApi(apiURL + indexExample[category]);
-    searchBarArray.push(searchIndex.results);
-  });
-  return searchBarArray;
-};
+let allResults = [];
 
 /**
  * Bruker en annen api, og normaliserer til vår api for å lage en søkefunksjon. Vår valgte API mangler enkel søkefunksjon.
@@ -167,27 +178,75 @@ const searchBarArrayMaker = async () => {
  * @returns
  */
 const searchFunction = async (string) => {
-  const allResults = [];
+  for (let child of resultScreen.children) {
+    child.remove();
+  }
+  setActiveScreen(resultScreen);
+  //Mindre nøyaktig søkefunksjon, går via en annen api. gir flere resultater, men mangler mye.
   const normalizedString = string.toLowerCase();
   const results = await fetchApi(
     searchAPIURL + normalizedString + "&document_slug=wotc-srd"
   );
   results.results.forEach(async (result) => {
-    const name = result.name.toLowerCase();
+    let name = result.name.toLowerCase();
+    if (name === "weapons" || name === "armor") name = normalizedString;
     const normalizedName = name.split(" ").join("-");
     let index = result.route.toLowerCase();
-    if (index == "magicitems/") index = "magic-items/";
+    if (index === "magicitems/") index = "magic-items/";
+    if (index === "sections/") index = "equipment/";
     const newSearchApi = `${apiURL}/api/${index}${normalizedName}`;
     const searchResult = await fetchApi(newSearchApi);
-    allResults.push(searchResult);
+    if (searchResult === "Nothing Found!") return;
+    else {
+      const resultName = makeElements("button", {
+        className: "resultName descriptionText darkMode",
+        innerText: searchResult.name,
+        value: searchResult.url,
+      });
+      resultName.addEventListener("click", async () => {
+        await setActiveMonster(resultName.value);
+        displayMonsterInfo(monsterExample);
+        setActiveScreen(infoCard);
+        history.pushState({ page_id: "displayMonster" }, "");
+      });
+      resultScreen.appendChild(resultName);
+      if (!searchResult.desc) return;
+      else {
+        if (searchResult.desc === []) {
+          for (let desc of searchResult.desc) {
+            const resultDesc = makeElements("p", {
+              className: "resultName buttonText darkMode",
+              innerText: desc,
+            });
+            resultScreen.appendChild(resultDesc);
+          }
+        } else {
+          const resultDesc = makeElements("p", {
+            className: "resultName buttonText darkMode",
+            innerText: searchResult.desc,
+          });
+          resultScreen.appendChild(resultDesc);
+        }
+        history.pushState({ page_id: "search" }, "");
+      }
+    }
   });
-  return allResults;
+  /* 
+  //Mer direkte søkefunksjon, men søket må være svært nøyaktig.
+  const normalizedString = string.toLowerCase().split(" ").join("-");
+  Object.keys(indexExample).forEach(async (category) => {
+    const result = await fetchApi(
+      `${apiURL}/api/${category}/${normalizedString}`
+    );
+    if (result === "Nothing Found!") return;
+    else allResults.push(result);
+  }); */
 };
 
-searchBtn.addEventListener("click", async () => {
-  const results = await searchFunction(searchField.value);
-  console.log(results);
-});
+searchBtn.addEventListener(
+  "click",
+  async () => await searchFunction(searchField.value)
+);
 
 const desktopButtonDisplay = (navBarObject) => {
   const navBtnContainer = makeElements("div", {
@@ -367,10 +426,6 @@ const mobileCheck = (navBarObject, headerElement) => {
   else return desktopButtonDisplay(navBarObject);
 };
 
-window.addEventListener("change", (event) => {
-  navBarMaker();
-});
-
 const navBarMaker = async () => {
   const navBarObject = await fetchNavBarObject();
   const headerElement = makeElements("header", { className: "navBar navDark" });
@@ -389,7 +444,7 @@ await navBarMaker();
 
 //monsterCard image maker
 const cardImage = document.createElement("img");
-cardImage.src = apiURL + monsterExample.image;
+
 cardImage.setAttribute("width", "400");
 cardImage.setAttribute("height", "300");
 cardImgContainer.appendChild(cardImage);
@@ -409,67 +464,73 @@ const monsterProficiencyBonus = document.createElement("p");
 const monsterSpecialAbility = document.createElement("p");
 const monsterAction = document.createElement("p");
 const monsterDescription = document.createElement("p");
-monsterName.textContent = `${monsterExample.name}`;
-cardTextContainer.appendChild(monsterName);
+const displayMonsterInfo = (monsterExample) => {
+  cardImage.src = apiURL + monsterExample.image;
 
-//size, race and alignment display
-monsterSize.textContent = `${monsterExample.size}, ${monsterExample.type}, ${monsterExample.alignment}`;
-cardTextContainer.appendChild(monsterSize);
+  monsterName.textContent = `${monsterExample.name}`;
+  cardTextContainer.appendChild(monsterName);
 
-//create armor information
-monsterArmor.textContent = `Armor Class ${monsterExample.armor_class[0].value}`;
-cardTextContainer.appendChild(monsterArmor);
+  //size, race and alignment display
+  monsterSize.textContent = `${monsterExample.size}, ${monsterExample.type}, ${monsterExample.alignment}`;
+  cardTextContainer.appendChild(monsterSize);
 
-//hit points display
-monsterHP.textContent = `Hit Point ${monsterExample.hit_points} (${monsterExample.hit_points_roll})`;
-cardTextContainer.appendChild(monsterHP);
+  //create armor information
+  monsterArmor.textContent = `Armor Class ${monsterExample.armor_class[0].value}`;
+  cardTextContainer.appendChild(monsterArmor);
 
-//speed value display
-monsterSpeed.textContent = `Speed ${monsterExample.speed.walk}`;
-cardTextContainer.appendChild(monsterSpeed);
+  //hit points display
+  monsterHP.textContent = `Hit Point ${monsterExample.hit_points} (${monsterExample.hit_points_roll})`;
+  cardTextContainer.appendChild(monsterHP);
 
-//Monster stats display
-monsterStats.textContent = `STR ${monsterExample.strength} DEX ${monsterExample.dexterity} CON ${monsterExample.constitution} INT ${monsterExample.intelligence} WIS ${monsterExample.wisdom} CHA ${monsterExample.charisma}`;
-cardTextContainer.appendChild(monsterStats);
+  //speed value display
+  monsterSpeed.textContent = `Speed ${monsterExample.speed.walk}`;
+  cardTextContainer.appendChild(monsterSpeed);
 
-//Monster skill display
-//fix a better method which makes it able to register monster with more than 2 skills
-monsterSkill.textContent = `Skills ${monsterExample.proficiencies[0].proficiency.name.slice(
-  6
-)} +${
-  monsterExample.proficiencies[0].value
-}, ${monsterExample.proficiencies[1].proficiency.name.slice(6)} +${
-  monsterExample.proficiencies[1].value
-}`;
-cardTextContainer.appendChild(monsterSkill);
+  //Monster stats display
+  monsterStats.textContent = `STR ${monsterExample.strength} DEX ${monsterExample.dexterity} CON ${monsterExample.constitution} INT ${monsterExample.intelligence} WIS ${monsterExample.wisdom} CHA ${monsterExample.charisma}`;
+  cardTextContainer.appendChild(monsterStats);
 
-//Monster sense Display
-// find a way to remove "_" in propertynames
-monsterSense.textContent = `Senses ${Object.getOwnPropertyNames(
-  monsterExample.senses
-)} ${Object.values(monsterExample.senses)}`;
-cardTextContainer.appendChild(monsterSense);
+  //Monster skill display
+  //fix a better method which makes it able to register monster with more than 2 skills
+  monsterSkill.textContent = `Skills ${monsterExample.proficiencies[0].proficiency.name.slice(
+    6
+  )} +${
+    monsterExample.proficiencies[0].value
+  }, ${monsterExample.proficiencies[1].proficiency.name.slice(6)} +${
+    monsterExample.proficiencies[1].value
+  }`;
+  cardTextContainer.appendChild(monsterSkill);
 
-//Monster Language Display
-monsterLanguage.textContent = `Languages ${monsterExample.languages}`;
-cardTextContainer.appendChild(monsterLanguage);
+  //Monster sense Display
+  // find a way to remove "_" in propertynames
+  monsterSense.textContent = `Senses ${Object.getOwnPropertyNames(
+    monsterExample.senses
+  )} ${Object.values(monsterExample.senses)}`;
+  cardTextContainer.appendChild(monsterSense);
 
-//Monster xp and challenge rating
-monsterExp.textContent = `Challenge ${monsterExample.challenge_rating} (${monsterExample.xp} XP)`;
-cardTextContainer.appendChild(monsterExp);
+  //Monster Language Display
+  monsterLanguage.textContent = `Languages ${monsterExample.languages}`;
+  cardTextContainer.appendChild(monsterLanguage);
 
-//Monster proficiency bonus display
-monsterProficiencyBonus.textContent = `Proficiency Bonus +${monsterExample.proficiency_bonus}`;
-cardTextContainer.appendChild(monsterProficiencyBonus);
+  //Monster xp and challenge rating
+  monsterExp.textContent = `Challenge ${monsterExample.challenge_rating} (${monsterExample.xp} XP)`;
+  cardTextContainer.appendChild(monsterExp);
 
-//Monster Special ability
-monsterSpecialAbility.textContent = `${monsterExample.special_abilities[0].name} ${monsterExample.special_abilities[0].desc}`;
-cardTextContainer.appendChild(monsterSpecialAbility);
+  //Monster proficiency bonus display
+  monsterProficiencyBonus.textContent = `Proficiency Bonus +${monsterExample.proficiency_bonus}`;
+  cardTextContainer.appendChild(monsterProficiencyBonus);
 
-//Monster Action
-monsterAction.textContent = `Action ${monsterExample.actions[0].name} ${monsterExample.actions[0].desc}`;
-cardTextContainer.appendChild(monsterAction);
+  //Monster Special ability
+  monsterSpecialAbility.textContent = `${monsterExample.special_abilities[0].name} ${monsterExample.special_abilities[0].desc}`;
+  cardTextContainer.appendChild(monsterSpecialAbility);
 
-//Monster descprtion
-monsterDescription.textContent = `Description ${monsterExample.desc}`;
-cardTextContainer.appendChild(monsterDescription);
+  //Monster Action
+  monsterAction.textContent = `Action ${monsterExample.actions[0].name} ${monsterExample.actions[0].desc}`;
+  cardTextContainer.appendChild(monsterAction);
+
+  //Monster descprtion
+  monsterDescription.textContent = `Description ${monsterExample.desc}`;
+  cardTextContainer.appendChild(monsterDescription);
+};
+
+setActiveScreen(startPage);
