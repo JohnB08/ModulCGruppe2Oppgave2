@@ -13,12 +13,12 @@
 body {
   display: grid;
   grid-template-areas:
-    "nav nav nav nav"
-    ". info info search "
-    ". info info . "
-    ". info info . ";
+    "nav nav nav"
+    ". info search "
+    ". info . "
+    ". info . ";
   grid-template-rows: 6rem 4rem 1fr;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: 1fr 3fr 1fr;
   height: auto;
   background: var(--dark);
 }
@@ -53,6 +53,7 @@ body {
 .searchContainer {
   grid-area: search;
   place-self: start;
+  justify-self: end;
   background-color: var(--light);
   padding: 1rem 3rem;
 }

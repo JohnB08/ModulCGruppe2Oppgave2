@@ -1,17 +1,53 @@
-const fetchApi = async (url) => {
-  const response = await fetch(url, {
-    //dette objektet er med fordi API må vite at vi vil ha en json fil tilbake
-    accept: "application/json",
-  });
-  if (!response.ok) {
-    return "Nothing Found!";
-  } else {
-    const result = await response.json();
-    return result;
-  }
+/* Importer fra moduler */
+
+import { fetchApi } from "./fetchApi.js";
+import { makeElements } from "./makeElements.js";
+import { hamButton } from "./hamburgerSVG.js";
+
+/* fetcher fra HTML */
+
+const infoCard = document.querySelector(".info-card");
+
+const cardImgContainer = document.querySelector(".card-img");
+
+const cardTextContainer = document.querySelector(".monster-stats");
+
+const searchBtn = document.querySelector(".searchBtn");
+
+const searchField = document.querySelector("#searchField");
+
+const startPage = document.querySelector(".startPage");
+
+const resultScreen = document.querySelector(".resultScreen");
+
+/* globale variabler */
+
+let menuOpen = false;
+let currentTarget = "";
+let activeScreen = startPage;
+
+/**
+ * Setter hvilke div som skal vises til en hver tid.
+ * @param {*} screenElement hvilket element som skal vises.
+ */
+const setActiveScreen = (screenElement) => {
+  activeScreen.style.display = "none";
+  activeScreen = screenElement;
+  activeScreen.style.display = "flex";
 };
 
-/* Dette er apiurlen vi legger alle andre url til inni objektet. */
+/**
+ * Funksjon som finner et monster fra API og setter det som monsterExample variabelen.
+ * @param {*} monsterURL
+ */
+const setActiveMonster = async (monsterURL) => {
+  monsterExample = await fetchApi(apiURL + monsterURL);
+};
+
+/* For å lage en brukervennlig navbar må index fra API struktureres litt annerledes. */
+
+/* API URLER */
+
 const apiURL = "https://www.dnd5eapi.co";
 
 const apiIndex = "https://www.dnd5eapi.co/api";
@@ -26,82 +62,18 @@ const monsterUrl = "https://www.dnd5eapi.co/api/monsters/acolyte";
 
 let monsterExample = await fetchApi(monsterUrl);
 
-const infoCard = document.querySelector(".info-card");
-
-const cardImgContainer = document.querySelector(".card-img");
-
-const cardTextContainer = document.querySelector(".monster-stats");
-
-const searchBtn = document.querySelector(".searchBtn");
-const searchField = document.querySelector("#searchField");
-const startPage = document.querySelector(".startPage");
-const resultScreen = document.querySelector(".resultScreen");
-
 const searchAPIURL = "https://api.open5e.com/search/?text=";
-
-console.log(indexExample);
-console.log(allMonstersExample);
-console.log(monsterExample);
-
-let activeScreen = startPage;
-
-/*
- *Alle funksjoner skal ta inn ett av eksemplene som parameter.
- *Dette gjøres ved å si først til funksjonen din når du lager den, at du vil ha et parameter
- *kodestruktur:
- *const fetchMonsters = (parameterObject) => {
- *Så bruker du parameteret inni funksjonen
- *   console.log(parameterObject)
- *
- * }
- *
- * Når du caller på (kjører) funksjonen senere, så legger du eksempelobjektet inn i funksjonen.
- *
- * fetchMonsters(monsterExample)
- *
- *Da vil funksjonen erstatte parameterObject med monsterExample i koden du har, og kjøre koden din med monsterExample.
- *
- * I eksempelet over ender du opp med at monsterExample blir consol logget.
- *
- *
- */
-
-/**
- * Funksjon som lager html element
- * @param {*} type hvilken type element du vil ha, string. f.eks "div"
- * @param {*} parameters hvilke parametere du vil gi elementet, f.eks {classname: "container"}
- */
-const makeElements = (type, parameters) => {
-  const element = document.createElement(type);
-  Object.entries(parameters).forEach((entry) => {
-    let [propertyKey, propertyValue] = entry;
-    element[propertyKey] = propertyValue;
-  });
-  return element;
-};
-
-/**
- * Setter hvilke div som skal vises til en hver tid.
- * @param {*} screenElement hvilket element som skal vises.
- */
-const setActiveScreen = (screenElement) => {
-  activeScreen.style.display = "none";
-  activeScreen = screenElement;
-  activeScreen.style.display = "flex";
-};
-
-/* For å lage en brukervennlig navbar må index fra API struktureres litt annerledes. */
 
 /* NAVBAR START*/
 /**
  * Lager et nytt object basert på API, strukturert så navBar i topp får fem knapper med hver sin undermeny.
  * er mye mer leslig en det orginale objektet.
- * @param {*} object tar inn indexen til API
- * @returns ferdig strukturert object.
+ * @param {*} object index til valgt api.
+ * @returns
  */
-
 const makeNavBarObject = async (object) => {
   const navBarObject = {};
+  //Siden objektet blir omstrukturert til å være mye mer kompakt m.h.t. brukervennlighet og knapper, er dette vanskelig å få til med en funksjon.
   navBarObject.generalRules = {
     subMenu: {
       "Ability Scores": object["ability-scores"],
@@ -123,6 +95,7 @@ const makeNavBarObject = async (object) => {
     allClasses: object["classes"],
     subMenu: {},
   };
+  //Fetcher alle classnames og legger de inn i subMenu objektet. Disse skal brukes senere for å displaye dropdown menu i objektet.
   let fetchClasses = await fetchApi(`${apiURL}${object["classes"]}`);
   for (let classID of fetchClasses.results) {
     navBarObject.classes.subMenu[classID.index] = classID;
@@ -132,6 +105,7 @@ const makeNavBarObject = async (object) => {
     allRaces: object["races"],
     subMenu: {},
   };
+  //Gjør det samme her som med classes
   let fetchRaces = await fetchApi(`${apiURL}${object["races"]}`);
   for (let race of fetchRaces.results) {
     navBarObject.races.subMenu[race.index] = race;
@@ -150,9 +124,7 @@ const makeNavBarObject = async (object) => {
   };
   return navBarObject;
 };
-const setActiveMonster = async (monsterURL) => {
-  monsterExample = await fetchApi(apiURL + monsterURL);
-};
+
 /**
  * ser om navbar allerede er lagret i localStorage, så siden slipper å gjøre en ny API call.
  * Siden navbar er ganske statisk føler jeg dette er en god måte å gjøre det på. det gjør at
@@ -168,9 +140,195 @@ const fetchNavBarObject = async () => {
   }
   return navBarObject;
 };
-let menuOpen = false;
-let currentTarget = "";
-let allResults = [];
+
+/**
+ * Funksjon som displayer menyen om man er på desktop
+ * @param {*} navBarObject
+ * @returns
+ */
+const desktopButtonDisplay = (navBarObject) => {
+  const navBtnContainer = makeElements("div", {
+    className: "navBtnContainer",
+  });
+  Object.keys(navBarObject).forEach((category) => {
+    const btn = makeElements("div", {
+      className: "btnTextOnly btnText navBarBtn",
+      innerText: navBarObject[category].name,
+      id: category,
+    });
+    btn.addEventListener("mouseover", (event) =>
+      subMenuGenerator(event, category, navBarObject)
+    );
+    navBtnContainer.appendChild(btn);
+  });
+
+  navBtnContainer.addEventListener("mouseover", (event) => {
+    if (!subMenuOpen) return;
+    else if (event.target === navBtnContainer) subMenuRemover();
+  });
+  return navBtnContainer;
+};
+
+/**
+ * Funksjon som lager knappene for mobilbruk.
+ * @param {*} navBarObject
+ * @param {*} headerElement
+ * @returns
+ */
+const mobileButtonDisplay = (navBarObject, headerElement) => {
+  headerElement.appendChild(hamButton);
+  const hamMenu = makeElements("div", { className: "hamMenu" });
+  Object.keys(navBarObject).forEach((category) => {
+    const btn = makeElements("div", {
+      className: "hamMenuBtn",
+      innerText: navBarObject[category].name,
+      id: category,
+    });
+    btn.addEventListener("click", (event) =>
+      mobileSubMenuGenerator(event, category, navBarObject)
+    );
+    hamMenu.appendChild(btn);
+  });
+  hamButton.addEventListener("click", () => {
+    const armArray = document.querySelectorAll(".arm");
+    if (menuOpen) {
+      hamMenu.style.display = "none";
+      menuOpen = false;
+      for (let i = 0; i < armArray.length; i++) {
+        armArray[i].classList.remove(`armAnim${i + 1}`);
+      }
+    } else {
+      hamMenu.style.display = "flex";
+      menuOpen = true;
+      for (let i = 0; i < armArray.length; i++) {
+        armArray[i].classList.add(`armAnim${i + 1}`);
+      }
+    }
+  });
+  return hamMenu;
+};
+
+/* DROPDOWN MENU DESKTOP! */
+let subMenuOpen = false;
+let menuElements = [];
+let btnId = 0;
+
+/**
+ * Funskjon som lager dropdown menyen for desktop.
+ * @param {*} event
+ * @param {*} category
+ * @param {*} navBarObject
+ * @returns
+ */
+const subMenuGenerator = (event, category, navBarObject) => {
+  const selectedBtn = event.target;
+  if (subMenuOpen) {
+    return;
+  } else if (!navBarObject[category].subMenu) {
+    return;
+  } else {
+    btnId = 0;
+    const subMenu = makeElements("div", {
+      className: "subMenu navDark sideBorders",
+    });
+    Object.keys(navBarObject[category].subMenu).forEach((subCat) => {
+      const btn = makeElements("button", {
+        className: "btnTextOnly btnTextNoBold subMenuBtn",
+        innerText: subCat,
+        id: subCat,
+      });
+      btnId++;
+      btn.style.animationDelay = `${btnId * 25}ms`;
+      subMenu.appendChild(btn);
+      menuElements.push(subMenu);
+      subMenu.addEventListener("mouseleave", () => subMenuRemover());
+    });
+    selectedBtn.appendChild(subMenu);
+    subMenuOpen = true;
+  }
+};
+
+/**
+ * Funksjon som fjerner knappene igjen for desktop
+ * @returns
+ */
+const subMenuRemover = () => {
+  if (!subMenuOpen) return;
+  else {
+    menuElements.forEach((element) => element.remove());
+    menuElements = [];
+    subMenuOpen = false;
+  }
+};
+
+/**
+ * Funksjon som lager submeny for mobilmenyen.
+ * @param {*} event
+ * @param {*} category
+ * @param {*} navBarObject
+ */
+const mobileSubMenuGenerator = (event, category, navBarObject) => {
+  const selectedBtn = event.target;
+  if (subMenuOpen) {
+    menuElements.forEach((element) => element.remove());
+    menuElements = [];
+    subMenuOpen = false;
+    if (selectedBtn != currentTarget) {
+      currentTarget = selectedBtn;
+      mobileSubMenuGenerator(event, category, navBarObject);
+    }
+  } else {
+    currentTarget = selectedBtn;
+    btnId = 0;
+    const subMenu = makeElements("div", {
+      className: "mobileSubMenu navDark",
+    });
+    Object.keys(navBarObject[category].subMenu).forEach((subCat) => {
+      const btn = makeElements("button", {
+        className: "btnTextOnly btnTextNoBold subMenuBtn",
+        innerText: subCat,
+        id: subCat,
+      });
+      btnId++;
+      btn.style.animationDelay = `${btnId * 25}ms`;
+      subMenu.appendChild(btn);
+      menuElements.push(subMenu);
+    });
+    selectedBtn.appendChild(subMenu);
+    subMenuOpen = true;
+  }
+};
+
+/**
+ * Funksjon som skjekker om vi er på en mobil eller ikke, kjører enten mobiledisplay eller desktopdisplay
+ * @param {*} navBarObject
+ * @param {*} headerElement
+ * @returns
+ */
+const mobileCheck = (navBarObject, headerElement) => {
+  if (window.navigator.userAgentData.mobile || window.innerWidth < 600)
+    return mobileButtonDisplay(navBarObject, headerElement);
+  else return desktopButtonDisplay(navBarObject);
+};
+
+/**
+ * Funksjon som lager headerElementet som inneholder navBar
+ */
+const navBarMaker = async () => {
+  const navBarObject = await fetchNavBarObject();
+  const headerElement = makeElements("header", { className: "navBar navDark" });
+  const logoContainer = makeElements("div", { className: "logoContainer" });
+  const logo = makeElements("img", { src: "./img/logo.svg" });
+  logoContainer.appendChild(logo);
+  headerElement.appendChild(logoContainer);
+  const navBtnContainer = mobileCheck(navBarObject, headerElement);
+  headerElement.appendChild(navBtnContainer);
+  document.body.prepend(headerElement);
+};
+
+await navBarMaker();
+
+/* Søkefunksjoner */
 
 /**
  * Bruker en annen api, og normaliserer til vår api for å lage en søkefunksjon. Vår valgte API mangler enkel søkefunksjon.
@@ -178,15 +336,18 @@ let allResults = [];
  * @returns
  */
 const searchFunction = async (string) => {
+  //Fjerner alle gamle "children" fra resultScreen
   for (let child of resultScreen.children) {
     child.remove();
   }
   setActiveScreen(resultScreen);
   //Mindre nøyaktig søkefunksjon, går via en annen api. gir flere resultater, men mangler mye.
   const normalizedString = string.toLowerCase();
+  //Finner resultatet fra søkemotoren til searchAPI, limiter søket til innhold vår api har.
   const results = await fetchApi(
     searchAPIURL + normalizedString + "&document_slug=wotc-srd"
   );
+  //Går gjennom alle resultatene og normaliserer svarene til vår apitype. Noe her kan gjøres bedre. men beste er nok å faktisk skifte API vi bruker på siden.
   results.results.forEach(async (result) => {
     let name = result.name.toLowerCase();
     if (name === "weapons" || name === "armor") name = normalizedString;
@@ -196,7 +357,9 @@ const searchFunction = async (string) => {
     if (index === "sections/") index = "equipment/";
     const newSearchApi = `${apiURL}/api/${index}${normalizedName}`;
     const searchResult = await fetchApi(newSearchApi);
+    //passer på å ignorere de søkene hvor ingenting er funnet.
     if (searchResult === "Nothing Found!") return;
+    //Lager nye child elementer til resultScreen basert på søkeresultatene.
     else {
       const resultName = makeElements("button", {
         className: "resultName descriptionText darkMode",
@@ -231,8 +394,8 @@ const searchFunction = async (string) => {
       }
     }
   });
+  //Mer direkte søkefunksjon, men søket må være svært nøyaktig. dårlig brukeropplevelse.
   /* 
-  //Mer direkte søkefunksjon, men søket må være svært nøyaktig.
   const normalizedString = string.toLowerCase().split(" ").join("-");
   Object.keys(indexExample).forEach(async (category) => {
     const result = await fetchApi(
@@ -243,202 +406,17 @@ const searchFunction = async (string) => {
   }); */
 };
 
+//Eventlistener til søkeknappen
 searchBtn.addEventListener(
   "click",
   async () => await searchFunction(searchField.value)
 );
 
-const desktopButtonDisplay = (navBarObject) => {
-  const navBtnContainer = makeElements("div", {
-    className: "navBtnContainer",
-  });
-  Object.keys(navBarObject).forEach((category) => {
-    const btn = makeElements("div", {
-      className: "btnTextOnly btnText navBarBtn",
-      innerText: navBarObject[category].name,
-      id: category,
-    });
-    btn.addEventListener("mouseover", (event) =>
-      subMenuGenerator(event, category, navBarObject)
-    );
-    navBtnContainer.appendChild(btn);
-  });
-
-  navBtnContainer.addEventListener("mouseover", (event) => {
-    if (!subMenuOpen) return;
-    else if (event.target === navBtnContainer) subMenuRemover();
-  });
-  return navBtnContainer;
-};
-
-const mobileButtonDisplay = (navBarObject, headerElement) => {
-  const hamButton = makeElements("div", { className: "hamBtn" });
-  const hamSVG = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  const svgAttributes = {
-    width: "3em",
-    height: "3em",
-    viewBox: "0 0 48 48",
-  };
-  Object.entries(svgAttributes).forEach((attribute) => {
-    let [attributeName, attributeValue] = attribute;
-    hamSVG.setAttribute(attributeName, attributeValue);
-  });
-  const hamPath1 = document.createElementNS(
-    "http://www.w3.org/2000/svg",
-    "path"
-  );
-  hamPath1.setAttribute("d", "M7.94971 11.9497H39.9497");
-  const hamPath2 = document.createElementNS(
-    "http://www.w3.org/2000/svg",
-    "path"
-  );
-  hamPath2.setAttribute("d", "M7.94971 23.9497H39.9497");
-  const hamPath3 = document.createElementNS(
-    "http://www.w3.org/2000/svg",
-    "path"
-  );
-  hamPath3.setAttribute("d", "M7.94971 35.9497H39.9497");
-
-  const pathAttributes = {
-    fill: "none",
-    stroke: "#2f3437",
-    "stroke-linecap": "round",
-    "stroke-linejoin": "round",
-    "stroke-width": "4",
-    class: "arm",
-  };
-
-  let armArray = [hamPath1, hamPath2, hamPath3];
-  armArray.forEach((arm) => {
-    Object.entries(pathAttributes).forEach((attribute) => {
-      let [attributeName, attributeValue] = attribute;
-      arm.setAttribute(attributeName, attributeValue);
-    });
-    hamSVG.appendChild(arm);
-  });
-  hamButton.appendChild(hamSVG);
-  headerElement.appendChild(hamButton);
-  const hamMenu = makeElements("div", { className: "hamMenu" });
-  Object.keys(navBarObject).forEach((category) => {
-    const btn = makeElements("div", {
-      className: "hamMenuBtn",
-      innerText: navBarObject[category].name,
-      id: category,
-    });
-    btn.addEventListener("click", (event) =>
-      mobileSubMenuGenerator(event, category, navBarObject)
-    );
-    hamMenu.appendChild(btn);
-  });
-  hamButton.addEventListener("click", () => {
-    if (menuOpen) {
-      hamMenu.style.display = "none";
-      menuOpen = false;
-      for (let i = 0; i < armArray.length; i++) {
-        armArray[i].classList.remove(`armAnim${i + 1}`);
-      }
-    } else {
-      hamMenu.style.display = "flex";
-      menuOpen = true;
-      for (let i = 0; i < armArray.length; i++) {
-        armArray[i].classList.add(`armAnim${i + 1}`);
-      }
-    }
-  });
-  return hamMenu;
-};
-
-/* DROPDOWN MENU DESKTOP! */
-let subMenuOpen = false;
-let menuElements = [];
-let btnId = 0;
-const subMenuGenerator = (event, category, navBarObject) => {
-  const selectedBtn = event.target;
-  if (subMenuOpen) {
-    return;
-  } else if (!navBarObject[category].subMenu) {
-    return;
-  } else {
-    btnId = 0;
-    const subMenu = makeElements("div", {
-      className: "subMenu navDark sideBorders",
-    });
-    Object.keys(navBarObject[category].subMenu).forEach((subCat) => {
-      const btn = makeElements("button", {
-        className: "btnTextOnly btnTextNoBold subMenuBtn",
-        innerText: subCat,
-        id: subCat,
-      });
-      btnId++;
-      btn.style.animationDelay = `${btnId * 25}ms`;
-      subMenu.appendChild(btn);
-      menuElements.push(subMenu);
-      subMenu.addEventListener("mouseleave", () => subMenuRemover());
-    });
-    selectedBtn.appendChild(subMenu);
-    subMenuOpen = true;
-  }
-};
-const subMenuRemover = () => {
-  if (!subMenuOpen) return;
-  else {
-    menuElements.forEach((element) => element.remove());
-    menuElements = [];
-    subMenuOpen = false;
-  }
-};
-
-const mobileSubMenuGenerator = (event, category, navBarObject) => {
-  const selectedBtn = event.target;
-  if (subMenuOpen) {
-    menuElements.forEach((element) => element.remove());
-    menuElements = [];
-    subMenuOpen = false;
-    if (selectedBtn != currentTarget) {
-      currentTarget = selectedBtn;
-      mobileSubMenuGenerator(event, category, navBarObject);
-    }
-  } else {
-    currentTarget = selectedBtn;
-    btnId = 0;
-    const subMenu = makeElements("div", {
-      className: "mobileSubMenu navDark",
-    });
-    Object.keys(navBarObject[category].subMenu).forEach((subCat) => {
-      const btn = makeElements("button", {
-        className: "btnTextOnly btnTextNoBold subMenuBtn",
-        innerText: subCat,
-        id: subCat,
-      });
-      btnId++;
-      btn.style.animationDelay = `${btnId * 25}ms`;
-      subMenu.appendChild(btn);
-      menuElements.push(subMenu);
-    });
-    selectedBtn.appendChild(subMenu);
-    subMenuOpen = true;
-  }
-};
-
-const mobileCheck = (navBarObject, headerElement) => {
-  if (window.navigator.userAgentData.mobile || window.innerWidth < 600)
-    return mobileButtonDisplay(navBarObject, headerElement);
-  else return desktopButtonDisplay(navBarObject);
-};
-
-const navBarMaker = async () => {
-  const navBarObject = await fetchNavBarObject();
-  const headerElement = makeElements("header", { className: "navBar navDark" });
-  const logoContainer = makeElements("div", { className: "logoContainer" });
-  const logo = makeElements("img", { src: "./img/logo.svg" });
-  logoContainer.appendChild(logo);
-  headerElement.appendChild(logoContainer);
-  const navBtnContainer = mobileCheck(navBarObject, headerElement);
-  headerElement.appendChild(navBtnContainer);
-  document.body.prepend(headerElement);
-};
-
-await navBarMaker();
+//Eventlistener til searchField. gjør at vi kan trykke enter for å søke.
+searchField.addEventListener("keydown", async (event) => {
+  if (event.code !== "Enter") return;
+  else await searchFunction(searchField.value);
+});
 
 /* NAVBAR END */
 
@@ -464,6 +442,8 @@ const monsterProficiencyBonus = document.createElement("p");
 const monsterSpecialAbility = document.createElement("p");
 const monsterAction = document.createElement("p");
 const monsterDescription = document.createElement("p");
+
+
 const displayMonsterInfo = (monsterExample) => {
   cardImage.src = apiURL + monsterExample.image;
 
@@ -503,9 +483,17 @@ const displayMonsterInfo = (monsterExample) => {
 
   //Monster sense Display
   // find a way to remove "_" in propertynames
-  monsterSense.textContent = `Senses ${Object.getOwnPropertyNames(
-    monsterExample.senses
-  )} ${Object.values(monsterExample.senses)}`;
+  monsterSense.textContent = "senses: ";
+  //Object Entries, så kan dekonstruere values.
+  Object.entries(monsterExample.senses).forEach((sense) => {
+    let [senseName, senseValue] = sense;
+    //ser om navnet inneholder _ og fjerner
+    if (senseName.includes("_")) {
+      senseName = senseName.split("_").join(" ");
+    }
+    //Legger dekonstruert value inn i p
+    monsterSense.textContent += `${senseName}: ${senseValue} `;
+  });
   cardTextContainer.appendChild(monsterSense);
 
   //Monster Language Display
