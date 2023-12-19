@@ -4,6 +4,9 @@ import { hamButton } from "./hamburgerSVG.js";
 
 let menuOpen = false;
 let currentTarget = "";
+let subMenuOpen = false;
+let menuElements = [];
+let btnId = 0;
 
 const apiURL = "https://www.dnd5eapi.co";
 
@@ -165,9 +168,6 @@ const mobileButtonDisplay = (navBarObject, headerElement) => {
 };
 
 /* DROPDOWN MENU DESKTOP! */
-let subMenuOpen = false;
-let menuElements = [];
-let btnId = 0;
 
 /**
  * Funskjon som lager dropdown menyen for desktop.
