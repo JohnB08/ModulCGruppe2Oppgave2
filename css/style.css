@@ -54,6 +54,7 @@ body {
   display: none;
   grid-area: info;
   place-self: center;
+  flex-direction: column;
   /*IKKE GJØR SOM JOHN SIER*/
 }
 .darkMode {

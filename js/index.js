@@ -34,12 +34,16 @@ const cardTextContainer = document.querySelector(".monster-stats");
 
 const searchBtn = document.querySelector(".searchBtn");
 const searchField = document.querySelector("#searchField");
+const startPage = document.querySelector(".startPage");
+const resultScreen = document.querySelector(".resultScreen");
 
 const searchAPIURL = "https://api.open5e.com/search/?text=";
 
 console.log(indexExample);
 console.log(allMonstersExample);
 console.log(monsterExample);
+
+let activeScreen = startPage;
 
 /*
  *Alle funksjoner skal ta inn ett av eksemplene som parameter.
@@ -75,6 +79,17 @@ const makeElements = (type, parameters) => {
   });
   return element;
 };
+
+/**
+ * Setter hvilke div som skal vises til en hver tid.
+ * @param {*} screenElement hvilket element som skal vises.
+ */
+const setActiveScreen = (screenElement) => {
+  activeScreen.style.display = "none";
+  activeScreen = screenElement;
+  activeScreen.style.display = "flex";
+};
+
 /* For å lage en brukervennlig navbar må index fra API struktureres litt annerledes. */
 
 /* NAVBAR START*/
@@ -163,9 +178,10 @@ let allResults = [];
  * @returns
  */
 const searchFunction = async (string) => {
-  let existingSearch = document.querySelector(".resultScreen");
-  if (existingSearch) existingSearch.remove();
-  const resultContainer = makeElements("div", { className: "resultScreen" });
+  for (let child of resultScreen.children) {
+    child.remove();
+  }
+  setActiveScreen(resultScreen);
   //Mindre nøyaktig søkefunksjon, går via en annen api. gir flere resultater, men mangler mye.
   const normalizedString = string.toLowerCase();
   const results = await fetchApi(
@@ -182,7 +198,6 @@ const searchFunction = async (string) => {
     const searchResult = await fetchApi(newSearchApi);
     if (searchResult === "Nothing Found!") return;
     else {
-      console.log(searchResult);
       const resultName = makeElements("button", {
         className: "resultName descriptionText darkMode",
         innerText: searchResult.name,
@@ -191,11 +206,10 @@ const searchFunction = async (string) => {
       resultName.addEventListener("click", async () => {
         await setActiveMonster(resultName.value);
         displayMonsterInfo(monsterExample);
-        resultContainer.remove();
-        infoCard.style.display = "block";
+        setActiveScreen(infoCard);
         history.pushState({ page_id: "displayMonster" }, "");
       });
-      resultContainer.appendChild(resultName);
+      resultScreen.appendChild(resultName);
       if (!searchResult.desc) return;
       else {
         if (searchResult.desc === []) {
@@ -204,16 +218,15 @@ const searchFunction = async (string) => {
               className: "resultName buttonText darkMode",
               innerText: desc,
             });
-            resultContainer.appendChild(resultDesc);
+            resultScreen.appendChild(resultDesc);
           }
         } else {
           const resultDesc = makeElements("p", {
             className: "resultName buttonText darkMode",
             innerText: searchResult.desc,
           });
-          resultContainer.appendChild(resultDesc);
+          resultScreen.appendChild(resultDesc);
         }
-        document.body.appendChild(resultContainer);
         history.pushState({ page_id: "search" }, "");
       }
     }
@@ -519,3 +532,5 @@ const displayMonsterInfo = (monsterExample) => {
   monsterDescription.textContent = `Description ${monsterExample.desc}`;
   cardTextContainer.appendChild(monsterDescription);
 };
+
+setActiveScreen(startPage);
