@@ -386,7 +386,6 @@ const navBarMaker = async () => {
 await navBarMaker();
 
 /* NAVBAR END */
-
 //monsterCard image maker
 const cardImage = document.createElement("img");
 cardImage.src = apiURL + monsterExample.image;
@@ -395,22 +394,22 @@ cardImage.setAttribute("height", "300");
 cardImgContainer.appendChild(cardImage);
 
 //monsterCard text content maker
-const monsterName = document.createElement("h1");
-const monsterSize = document.createElement("p");
-const monsterArmor = document.createElement("p");
-const monsterHP = document.createElement("p");
-const monsterSpeed = document.createElement("p");
-const monsterStats = document.createElement("p");
-const monsterSkill = document.createElement("p");
-const monsterSense = document.createElement("p");
-const monsterLanguage = document.createElement("p");
-const monsterExp = document.createElement("p");
-const monsterProficiencyBonus = document.createElement("p");
-const monsterSpecialAbility = document.createElement("p");
-const monsterAction = document.createElement("p");
-const monsterDescription = document.createElement("p");
-monsterName.textContent = `${monsterExample.name}`;
-cardTextContainer.appendChild(monsterName);
+const monsterName = document.createElement("h1")
+const monsterSize = document.createElement("p")
+const monsterArmor = document.createElement("p")
+const monsterHP = document.createElement("p")
+const monsterSpeed = document.createElement("p")
+const monsterStats = document.createElement("p")
+const monsterSkill = document.createElement("p")
+const monsterSense = document.createElement("p")
+const monsterLanguage = document.createElement("p")
+const monsterExp = document.createElement("p")
+const monsterProficiencyBonus = document.createElement("p")
+const monsterSpecialAbility = document.createElement("p")
+const monsterAction = document.createElement("p")
+const monsterDescription = document.createElement("p")
+monsterName.textContent = `${monsterExample.name}`
+cardTextContainer.appendChild(monsterName)
 
 //size, race and alignment display
 monsterSize.textContent = `${monsterExample.size}, ${monsterExample.type}, ${monsterExample.alignment}`;
@@ -471,5 +470,19 @@ monsterAction.textContent = `Action ${monsterExample.actions[0].name} ${monsterE
 cardTextContainer.appendChild(monsterAction);
 
 //Monster descprtion
-monsterDescription.textContent = `Description ${monsterExample.desc}`;
-cardTextContainer.appendChild(monsterDescription);
+monsterDescription.innerHTML = `<span>Description</span> ${monsterExample.desc}`
+cardTextContainer.appendChild(monsterDescription)
+
+
+////ble ble problematisk med objekter inni objektet
+// Object.entries(monsterExample).forEach((attribute) => {
+//   let [attributeName, attributeValue] = attribute;
+//   attributeName = attributeName.includes("_")
+//     ? attributeName.split("_").join(" ")
+//     : attributeName;
+//   const Description = `${attributeName}: ${attributeValue}`;
+//   console.log(Description);
+//   const descriptionText = document.createElement("p")
+//   descriptionText.textContent = Description
+//   cardTextContainer.appendChild(descriptionText)
+// });
