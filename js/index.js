@@ -124,16 +124,6 @@ const searchFunction = async (string, item = null) => {
     if (activeScreen !== resultScreen)
       setActiveScreen(resultScreen, "search", results);
   });
-  //Mer direkte søkefunksjon, men søket må være svært nøyaktig. dårlig brukeropplevelse.
-  /* 
-  const normalizedString = string.toLowerCase().split(" ").join("-");
-  Object.keys(indexExample).forEach(async (category) => {
-    const result = await fetchApi(
-      `${apiURL}/api/${category}/${normalizedString}`
-    );
-    if (result === "Nothing Found!") return;
-    else allResults.push(result);
-  }); */
 };
 
 const appendResults = async (searchResult, string = "") => {
