@@ -1,6 +1,7 @@
 import { fetchApi } from "./fetchApi.js";
 import { makeElements } from "./makeElements.js";
 import { hamButton } from "./hamburgerSVG.js";
+import { displaySearchItem } from "./displayItemInfo.js";
 
 let menuOpen = false;
 let currentTarget = "";
@@ -187,11 +188,16 @@ const subMenuGenerator = (event, category, navBarObject) => {
     const subMenu = makeElements("div", {
       className: "subMenu navDark sideBorders",
     });
-    Object.keys(navBarObject[category].subMenu).forEach((subCat) => {
+    let activeCategory = navBarObject[category].subMenu;
+    Object.keys(activeCategory).forEach((subCat) => {
       const btn = makeElements("button", {
         className: "btnTextOnly btnTextNoBold subMenuBtn",
         innerText: subCat,
         id: subCat,
+        value: activeCategory[subCat].url,
+      });
+      btn.addEventListener("click", (event) => {
+        displaySearchItem(event.target.value);
       });
       btnId++;
       btn.style.animationDelay = `${btnId * 25}ms`;
@@ -239,11 +245,16 @@ const mobileSubMenuGenerator = (event, category, navBarObject) => {
     const subMenu = makeElements("div", {
       className: "mobileSubMenu navDark",
     });
-    Object.keys(navBarObject[category].subMenu).forEach((subCat) => {
+    let activeCategory = navBarObject[category].subMenu;
+    Object.keys(activeCategory).forEach((subCat) => {
       const btn = makeElements("button", {
         className: "btnTextOnly btnTextNoBold subMenuBtn",
         innerText: subCat,
         id: subCat,
+        value: activeCategory[subCat].url,
+      });
+      btn.addEventListener("click", (event) => {
+        displaySearchItem(event.target.value);
       });
       btnId++;
       btn.style.animationDelay = `${btnId * 25}ms`;
@@ -274,7 +285,10 @@ const navBarMaker = async () => {
   const navBarObject = await fetchNavBarObject();
   const headerElement = makeElements("header", { className: "navBar navDark" });
   const logoContainer = makeElements("div", { className: "logoContainer" });
-  const logo = makeElements("img", { src: "./img/logo.svg" });
+  const logo = makeElements("img", {
+    src: "./img/logo.svg",
+    className: "headerLogo",
+  });
   logoContainer.appendChild(logo);
   headerElement.appendChild(logoContainer);
   const navBtnContainer = mobileCheck(navBarObject, headerElement);

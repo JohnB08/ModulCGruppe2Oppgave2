@@ -3,7 +3,12 @@
 import { fetchApi } from "./Modules/fetchApi.js";
 import { makeElements } from "./Modules/makeElements.js";
 import { navBarMaker } from "./Modules/navBarMaker.js";
-
+import {
+  setActiveScreen,
+  prevScreen,
+  activeScreen,
+} from "./Modules/setActiveScreen.js";
+import { displaySearchItem } from "./Modules/displayItemInfo.js";
 /* fetcher fra HTML */
 
 const infoCard = document.querySelector(".info-card");
@@ -20,20 +25,27 @@ const startPage = document.querySelector(".startPage");
 
 const resultScreen = document.querySelector(".resultScreen");
 
+/* mekker NAVBAR */
+await navBarMaker();
+
+const headerLogo = document.querySelector(".headerLogo");
+
 /* globale variabler */
 
-let activeScreen = startPage;
 let searchElements = [];
 
-/**
- * Setter hvilke div som skal vises til en hver tid.
- * @param {*} screenElement hvilket element som skal vises.
- */
-const setActiveScreen = (screenElement) => {
-  activeScreen.style.display = "none";
-  activeScreen = screenElement;
-  activeScreen.style.display = "flex";
-};
+window.addEventListener("popstate", (event) => {
+  console.log(event);
+  if (event.state === "startPage") setActiveScreen(startPage);
+  else if (event.target.location.pathname === "/search") {
+    searchFunction(event.state.stringKey, event.state);
+  } else if (event.target.location.pathname === "/info") {
+    displaySearchItem("", event.state);
+  } else if (event.target.location.pathname === "monster") {
+    displayMonsterInfo(event.state);
+    setActiveScreen(infoCard);
+  }
+});
 
 /**
  * Funksjon som finner et monster fra API og setter det som monsterExample variabelen.
@@ -68,8 +80,6 @@ const test = await fetchApi(
 );
 console.log(test);
 
-/* mekker NAVBAR */
-await navBarMaker();
 /* Søkefunksjoner */
 
 /**
@@ -77,17 +87,19 @@ await navBarMaker();
  * @param {*} string input
  * @returns
  */
-const searchFunction = async (string) => {
+const searchFunction = async (string, item = null) => {
   //Fjerner alle gamle "children" fra resultScreen og resetter searchElements
   searchElements.forEach((element) => element.remove());
   searchElements = [];
-  if (activeScreen !== resultScreen) setActiveScreen(resultScreen);
   //Mindre nøyaktig søkefunksjon, går via en annen api. gir flere resultater, men mangler mye.
   const normalizedString = string.toLowerCase();
   //Finner resultatet fra søkemotoren til searchAPI, limiter søket til innhold vår api har.
-  const results = await fetchApi(
-    searchAPIURL + normalizedString + "&document_slug=wotc-srd"
-  );
+  const results =
+    item ||
+    (await fetchApi(
+      searchAPIURL + normalizedString + "&document_slug=wotc-srd"
+    ));
+  results.stringKey = normalizedString;
   //Går gjennom alle resultatene og normaliserer svarene til vår apitype. Noe her kan gjøres bedre. men beste er nok å faktisk skifte API vi bruker på siden.
   results.results.forEach(async (result) => {
     let name = result.name.toLowerCase();
@@ -109,6 +121,8 @@ const searchFunction = async (string) => {
     else {
       appendResults(searchResult, normalizedString);
     }
+    if (activeScreen !== resultScreen)
+      setActiveScreen(resultScreen, "search", results);
   });
   //Mer direkte søkefunksjon, men søket må være svært nøyaktig. dårlig brukeropplevelse.
   /* 
@@ -123,7 +137,6 @@ const searchFunction = async (string) => {
 };
 
 const appendResults = async (searchResult, string = "") => {
-  console.log(searchResult);
   const resultName = makeElements("button", {
     className: "resultName descriptionText darkMode",
     innerText: searchResult.name,
@@ -131,9 +144,10 @@ const appendResults = async (searchResult, string = "") => {
   });
   resultName.addEventListener("click", async () => {
     await setActiveMonster(resultName.value);
-    displayMonsterInfo(monsterExample);
-    setActiveScreen(infoCard);
-    history.pushState({ page_id: "displayMonster" }, "");
+    resultName.value.includes("monsters")
+      ? (displayMonsterInfo(monsterExample),
+        setActiveScreen(infoCard, "monster", monsterExample))
+      : displaySearchItem(resultName.value);
   });
   searchElements.push(resultName);
   resultScreen.appendChild(resultName);
@@ -280,5 +294,9 @@ const displayMonsterInfo = (monsterExample) => {
   monsterDescription.textContent = `Description ${monsterExample.desc}`;
   cardTextContainer.appendChild(monsterDescription);
 };
-
-setActiveScreen(startPage);
+history.replaceState("startPage", "", document.location.href);
+setActiveScreen(startPage, "startPage", "startPage");
+console.log(headerLogo);
+headerLogo.addEventListener("click", () =>
+  setActiveScreen(startPage, "startPage", "startPage")
+);

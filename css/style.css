@@ -87,8 +87,15 @@ body {
 .logoContainer {
   width: 20%;
 }
-.logoContainer img {
+.headerLogo {
   width: 100%;
+  transition: 250ms;
+}
+.headerLogo:hover {
+  filter: brightness(0) saturate(100%) invert(16%) sepia(8%) saturate(690%)
+    hue-rotate(159deg) brightness(98%) contrast(88%);
+  transform: scale(105%);
+  cursor: pointer;
 }
 
 .navBtnContainer {
@@ -217,13 +224,32 @@ body {
 
 .resultName {
   border: 0;
-  border-top: 4px solid var(--accent);
   padding: 0.25rem 0;
-  text-align: start;
+  text-align: center;
   margin: 0.5rem 0;
+  transition: 250ms;
+  width: 50%;
+}
+.resultName:hover,
+.resultName:focus {
+  outline: none;
+  cursor: pointer;
+  transform: scale(105%);
 }
 .resultDesc {
   margin: 0.25rem 0;
+}
+
+.itemInfo {
+  grid-area: info;
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  max-height: 80vh;
+  max-width: 1000px;
+}
+.itemDesc span {
+  font-weight: bold;
 }
 
 @media only screen and (max-width: 600px) {
