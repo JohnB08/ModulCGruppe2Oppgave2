@@ -193,14 +193,20 @@ async function getDragonList(url) {
   setActiveScreen(mainContainer);
 }
 
-getDragonList(baseUrl);
+await getDragonList(baseUrl);
 
-function displayDragonList() {
+function displayDragonList(dragonList) {
   mainContainer.innerHTML = "";
   dragonList.forEach(async (dragon) => {
-    const dragonDetailData = await getDragonDetails(pokemon.url);
-    const dragonImg = dragonDetailData.sprites.other["official-artwork"];
-
+    const dragonDetailData =
+      /* await getDragonDetails(dragon.url); */ await fetchApi(
+        apiURL + dragon.url
+      );
+    console.log(dragonDetailData);
+    if (dragonDetailData.image) {
+      const dragonImg = document.createElement("img");
+      dragonImg.src = apiURL + dragonDetailData.image;
+    }
     const containerEl = document.createElement("div");
     const dragonNameEl = document.createElement("h3");
     dragonNameEl.textContent = dragon.name;
@@ -372,7 +378,7 @@ const displayMonsterInfo = (monsterExample) => {
     console.log(legendaryAction);
   }
   console.log(monsterExample.legendary_actions);
-  console.log("test")
+  console.log("test");
 };
 setActiveScreen(startPage);
 headerLogo.addEventListener("click", () => setActiveScreen(startPage));
