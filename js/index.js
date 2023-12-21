@@ -210,3 +210,49 @@ cardImage.setAttribute("height", "300");
 cardImgContainer.appendChild(cardImage);
 
 console.log(apiURL + monsterExample.image);
+
+const mainContainer = document.getElementById("main-container")
+const buttonHome = document.getElementById("home-btn")
+const buttonPrev = document.getElementById("previouse-btn")
+const buttonNext = document.getElementById("next-btn")
+
+const baseUrl = "https://www.dnd5eapi.co/api/monsters"
+
+let currentDragonList = {
+    count: 0,
+    next: "",
+    previous: "",
+    results: []
+}
+
+async function getDragonList(url) {
+    const response=await fetch(url || baseUrl)
+    if (response.status !== 200) {
+        console.warn("noe gikk galt")
+        return
+    }
+    const data = await response.json()
+    console.log(data)
+
+    currentDragonList = data
+
+    displayDragonList(data.results)
+}
+
+getDragonList(baseUrl) 
+
+function displayDragonList(){
+    mainContainer.innerHTML = ""
+    dragonList.forEach(async (dragon) => {
+        const dragonDetailData = await getDragonDetails(pokemon.url)
+        const dragonImg = dragonDetailData.sprites.other["official-artwork"]
+        
+        const containerEl = document.createElement("div")
+        const dragonNameEl = document.createElement("h3")
+        dragonNameEl.textContent = dragon.name
+
+})
+}
+
+
+
