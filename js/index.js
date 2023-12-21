@@ -9,6 +9,7 @@ import {
   activeScreen,
 } from "./Modules/setActiveScreen.mjs";
 import { displaySearchItem } from "./Modules/displayItemInfo.mjs";
+import { searchDatabase } from "./Modules/fetchData.mjs";
 /* fetcher fra HTML */
 
 const infoCard = document.querySelector(".info-card");
@@ -31,12 +32,6 @@ await navBarMaker();
 const headerLogo = document.querySelector(".headerLogo");
 
 /* globale variabler */
-const dataBaseFetcher = async () => {
-  const fetchedData = await fetch("./js/searchDatabase/searchObject.JSON");
-  const result = await fetchedData.json();
-  return result;
-};
-const searchDatabase = await dataBaseFetcher();
 let searchElements = [];
 
 /**
