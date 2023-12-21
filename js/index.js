@@ -35,7 +35,6 @@ const searchDatabase = await fetchApi("../js/searchDatabase/searchObject.JSON");
 console.log(searchDatabase.data);
 let searchElements = [];
 
-
 /**
  * Funksjon som finner et monster fra API og setter det som monsterExample variabelen.
  * @param {*} monsterURL
@@ -92,8 +91,7 @@ const searchFunction = async (string, item = null) => {
   //Går gjennom alle resultatene og normaliserer svarene til vår apitype. Noe her kan gjøres bedre. men beste er nok å faktisk skifte API vi bruker på siden.
 
   //Lager nye child elementer til resultScreen basert på søkeresultatene.
-  if (activeScreen !== resultScreen)
-    setActiveScreen(resultScreen);
+  if (activeScreen !== resultScreen) setActiveScreen(resultScreen);
   for (let result of searchResult) {
     const fetchedData = await fetchApi(apiURL + result.url);
     appendResults(fetchedData);
@@ -126,8 +124,7 @@ const appendResults = async (searchResult) => {
   resultName.addEventListener("click", async () => {
     await setActiveMonster(resultName.value);
     resultName.value.includes("monsters")
-      ? (displayMonsterInfo(monsterExample),
-        setActiveScreen(infoCard))
+      ? (displayMonsterInfo(monsterExample), setActiveScreen(infoCard))
       : displaySearchItem(resultName.value);
   });
   searchElements.push(resultName);
@@ -166,6 +163,49 @@ searchField.addEventListener("keydown", async (event) => {
 
 /* NAVBAR END */
 
+/* dragonList */
+const mainContainer = document.getElementById("main-container");
+const buttonHome = document.getElementById("home-btn");
+const buttonPrev = document.getElementById("previouse-btn");
+const buttonNext = document.getElementById("next-btn");
+
+const baseUrl = "https://www.dnd5eapi.co/api/monsters";
+
+let currentDragonList = {
+  count: 0,
+  next: "",
+  previous: "",
+  results: [],
+};
+
+async function getDragonList(url) {
+  const response = await fetch(url || baseUrl);
+  if (response.status !== 200) {
+    console.warn("noe gikk galt");
+    return;
+  }
+  const data = await response.json();
+  console.log(data);
+
+  currentDragonList = data;
+
+  displayDragonList(data.results);
+}
+
+getDragonList(baseUrl);
+
+function displayDragonList() {
+  mainContainer.innerHTML = "";
+  dragonList.forEach(async (dragon) => {
+    const dragonDetailData = await getDragonDetails(pokemon.url);
+    const dragonImg = dragonDetailData.sprites.other["official-artwork"];
+
+    const containerEl = document.createElement("div");
+    const dragonNameEl = document.createElement("h3");
+    dragonNameEl.textContent = dragon.name;
+  });
+}
+
 //monsterCard image maker
 const cardImage = document.createElement("img");
 
@@ -174,51 +214,6 @@ cardImage.setAttribute("height", "300");
 cardImgContainer.appendChild(cardImage);
 
 console.log(apiURL + monsterExample.image);
-
-const mainContainer = document.getElementById("main-container")
-const buttonHome = document.getElementById("home-btn")
-const buttonPrev = document.getElementById("previouse-btn")
-const buttonNext = document.getElementById("next-btn")
-
-const baseUrl = "https://www.dnd5eapi.co/api/monsters"
-
-let currentDragonList = {
-    count: 0,
-    next: "",
-    previous: "",
-    results: []
-}
-
-async function getDragonList(url) {
-    const response=await fetch(url || baseUrl)
-    if (response.status !== 200) {
-        console.warn("noe gikk galt")
-        return
-    }
-    const data = await response.json()
-    console.log(data)
-
-    currentDragonList = data
-
-    displayDragonList(data.results)
-}
-
-getDragonList(baseUrl) 
-
-function displayDragonList(){
-    mainContainer.innerHTML = ""
-    dragonList.forEach(async (dragon) => {
-        const dragonDetailData = await getDragonDetails(pokemon.url)
-        const dragonImg = dragonDetailData.sprites.other["official-artwork"]
-        
-        const containerEl = document.createElement("div")
-        const dragonNameEl = document.createElement("h3")
-        dragonNameEl.textContent = dragon.name
-
-})
-}
-
-
 
 //monsterCard text content maker
 const monsterName = document.createElement("h1");
@@ -313,6 +308,4 @@ const displayMonsterInfo = (monsterExample) => {
   cardTextContainer.appendChild(monsterDescription);
 };
 setActiveScreen(startPage);
-headerLogo.addEventListener("click", () =>
-  setActiveScreen(startPage)
-);
+headerLogo.addEventListener("click", () => setActiveScreen(startPage));
