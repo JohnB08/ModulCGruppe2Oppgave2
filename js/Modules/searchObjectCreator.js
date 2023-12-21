@@ -52,4 +52,6 @@ const objectMaker = async () => {
   fullIndex.data = [];
   await fetchNextIndex(fullIndex);
 };
+
 objectMaker();
+
