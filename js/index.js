@@ -190,6 +190,7 @@ async function getDragonList(url) {
   currentDragonList = data;
 
   displayDragonList(data.results);
+  setActiveScreen(mainContainer);
 }
 
 getDragonList(baseUrl);

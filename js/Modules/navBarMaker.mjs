@@ -119,6 +119,9 @@ const desktopButtonDisplay = (navBarObject) => {
     btn.addEventListener("mouseover", (event) =>
       subMenuGenerator(event, category, navBarObject)
     );
+    if (btn.innerText === "Monsters") {
+      //sett inn funksjon fra dragonList her
+    }
     navBtnContainer.appendChild(btn);
   });
 
