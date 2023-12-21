@@ -7,6 +7,11 @@ let itemElements = [];
 const apiURL = "https://www.dnd5eapi.co";
 /* Item info */
 
+/**
+ * Tar inn enten en url eller et objekt. Hvis den får et objekt som allerede er fetcha viser den det i stedet, ellers fetcher den objektet fra API.
+ * @param {*} url
+ * @param {*} item
+ */
 const displaySearchItem = async (url, item = null) => {
   itemElements.forEach((element) => element.remove());
   itemElements = [];
@@ -22,6 +27,10 @@ const displaySearchItem = async (url, item = null) => {
   setActiveScreen(itemInfo, "info", itemObject);
 };
 
+/**
+ * Tarin et objekt fra displaySearchItem og displayer inforen som står i det.
+ * @param {*} itemObject
+ */
 const parseItemInfo = (itemObject) => {
   Object.entries(itemObject).forEach((item) => {
     let [itemName, itemValue] = item;
