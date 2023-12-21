@@ -463,6 +463,7 @@ const monsterProficiencyBonus = document.createElement("p");
 const monsterSpecialAbility = document.createElement("p");
 const monsterAction = document.createElement("p");
 const monsterDescription = document.createElement("p");
+const monsterLegendaryAction = document.createElement("p");
 
 const displayMonsterInfo = (monsterExample) => {
   cardImage.src = apiURL + monsterExample.image;
@@ -502,13 +503,14 @@ const displayMonsterInfo = (monsterExample) => {
   //Monster skill display
   if (!monsterExample.proficiencies) return;
   else {
-    const monsterSkillName = `<span>Skills</span>`;
+    let monsterSkills = ` `;
     for (let i = 0; i < monsterExample.proficiencies.length; i++) {
       const dupeRemover = monsterExample.proficiencies[i].proficiency.name;
       // .split(":")
       // .pop();
       console.log(dupeRemover);
-      monsterSkill.innerHTML += `${monsterSkillName}+ ${dupeRemover} +${monsterExample.proficiencies[i].value}`;
+      monsterSkills += `<span>${dupeRemover}</span> +${monsterExample.proficiencies[i].value}<br>`;
+      monsterSkill.innerHTML = `<span>Skills:</span><br> ${monsterSkills}`;
     }
 
     cardTextContainer.appendChild(monsterSkill);
@@ -522,19 +524,20 @@ const displayMonsterInfo = (monsterExample) => {
   // find a way to remove "_" in propertynames
   if (!monsterExample.senses) return;
   else {
-    monsterSense.textContent = "senses: ";
+    // monsterSense.textContent = "senses: ";
 
-    Object.entries(monsterExample.senses).forEach((sense) => {
-      let [senseName, senseValue] = sense;
+    // Object.entries(monsterExample.senses).forEach((sense) => {
+    //   let [senseName, senseValue] = sense;
 
-      if (senseName.includes("_")) {
-        senseName = senseName.split("_").join(" ");
-      }
-    });
+    //   if (senseName.includes("_")) {
+    //     senseName = senseName.split("_").join(" ");
+    //   }
+    // });
+    // monsterSense.textContent += `${senseName}: ${senseValue}`
+    monsterSense.innerHTML = `<span>Senses </span> ${Object.getOwnPropertyNames(
+      monsterExample.senses
+    )}  ${Object.values(monsterExample.senses)}`;
   }
-  // monsterSense.innerHTML = `<span>Senses </span>${Object.getOwnPropertyNames(
-  //   monsterExample.senses
-  // )} ${Object.values(monsterExample.senses)}`;
   cardTextContainer.appendChild(monsterSense);
 
   //Monster Language Display
@@ -566,25 +569,42 @@ const displayMonsterInfo = (monsterExample) => {
         cardTextContainer.appendChild(monsterSpecialAbility);
       }
     }
-
-    //Monster Action
-    if (!monsterExample.actions) return;
-    else {
-      monsterAction.innerHTML = `<span>Action</span> ${monsterExample.actions[0].name} ${monsterExample.actions[0].desc}`;
+  }
+  // Monster Action
+  if (!monsterExample.actions) return;
+  else {
+    let monsterActions = " ";
+    for (let i = 0; i < monsterExample.actions.length; i++) {
+      monsterActions += `<span>${monsterExample.actions[i].name}</span> ${monsterExample.actions[i].desc}<br>`;
+      monsterAction.innerHTML = `<span>Action</span><br> ${monsterActions}`;
       cardTextContainer.appendChild(monsterAction);
     }
-
-    //Monster descprtion
-    if (!monsterExample.desc) return;
-    else {
-      monsterDescription.innerHTML = `<span>Description</span> ${monsterExample.desc}`;
-      cardTextContainer.appendChild(monsterDescription);
-    }
-
-    // if (monsterExample.desc !== "object" || "undefined"){
-    // monsterDescription.innerHTML = `<span>Description</span> ${monsterExample.desc}`;
-    // cardTextContainer.appendChild(monsterDescription);
-    // }
   }
+
+  //Monster descprtion
+  if (!monsterExample.desc) return;
+  else {
+    monsterDescription.innerHTML = `<span>Description</span>: ${monsterExample.desc}`;
+    cardTextContainer.appendChild(monsterDescription);
+  }
+
+  // if (monsterExample.desc !== "object" || "undefined") {
+  //   monsterDescription.innerHTML = `<span>Description</span> ${monsterExample.desc}`;
+  //   cardTextContainer.appendChild(monsterDescription);
+  // }
+
+  if (!monsterExample.legendary_actions) return;
+  else {
+    let legendaryAction = "<span>Legendary Action:</span><br> ";
+    for (let i = 0; i < monsterExample.legendary_actions.length; i++) {
+      monsterLegendaryAction.innerHTML = `${monsterExample.legendary_actions[i].name} ${monsterExample.legendary_actions[i].desc} ${monsterExample.legendary_actions[i].damage}`;
+      // monsterLegendaryAction.innerHTML = legendaryAction;
+      cardTextContainer.appendChild(monsterLegendaryAction);
+      console.log(monsterLegendaryAction);
+    }
+    console.log(legendaryAction);
+  }
+  console.log(monsterExample.legendary_actions);
+  console.log("test")
 };
 setActiveScreen(startPage);
