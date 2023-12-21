@@ -1,17 +1,52 @@
-const fetchApi = async (url) => {
-  const response = await fetch(url, {
-    //dette objektet er med fordi API må vite at vi vil ha en json fil tilbake
-    accept: "application/json",
-  });
-  if (!response.ok) {
-    return "Nothing Found!";
-  } else {
-    const result = await response.json();
-    return result;
-  }
+/* Importer fra moduler */
+
+import { fetchApi } from "./Modules/fetchApi.mjs";
+import { makeElements } from "./Modules/makeElements.mjs";
+import { navBarMaker } from "./Modules/navBarMaker.mjs";
+import {
+  setActiveScreen,
+  prevScreen,
+  activeScreen,
+} from "./Modules/setActiveScreen.mjs";
+import { displaySearchItem } from "./Modules/displayItemInfo.mjs";
+/* fetcher fra HTML */
+
+const infoCard = document.querySelector(".info-card");
+
+const cardImgContainer = document.querySelector(".card-img");
+
+const cardTextContainer = document.querySelector(".monster-stats");
+
+const searchBtn = document.querySelector(".searchBtn");
+
+const searchField = document.querySelector("#searchField");
+
+const startPage = document.querySelector(".startPage");
+
+const resultScreen = document.querySelector(".resultScreen");
+
+/* mekker NAVBAR */
+await navBarMaker();
+
+const headerLogo = document.querySelector(".headerLogo");
+
+/* globale variabler */
+const searchDatabase = await fetchApi("../js/searchDatabase/searchObject.JSON");
+console.log(searchDatabase.data);
+let searchElements = [];
+
+/**
+ * Funksjon som finner et monster fra API og setter det som monsterExample variabelen.
+ * @param {*} monsterURL
+ */
+const setActiveMonster = async (monsterURL) => {
+  monsterExample = await fetchApi(apiURL + monsterURL);
 };
 
-/* Dette er apiurlen vi legger alle andre url til inni objektet. */
+/* For å lage en brukervennlig navbar må index fra API struktureres litt annerledes. */
+
+/* API URLER */
+
 const apiURL = "https://www.dnd5eapi.co";
 
 const apiIndex = "https://www.dnd5eapi.co/api";
@@ -26,421 +61,157 @@ const monsterUrl = "https://www.dnd5eapi.co/api/monsters/adult-black-dragon";
 
 let monsterExample = await fetchApi(monsterUrl);
 
-const infoCard = document.querySelector(".info-card");
-
-const cardImgContainer = document.querySelector(".card-img");
-
-const cardTextContainer = document.querySelector(".monster-stats");
-
-const searchBtn = document.querySelector(".searchBtn");
-const searchField = document.querySelector("#searchField");
-const startPage = document.querySelector(".startPage");
-const resultScreen = document.querySelector(".resultScreen");
-
 const searchAPIURL = "https://api.open5e.com/search/?text=";
 
-console.log(indexExample);
-console.log(allMonstersExample);
-console.log(monsterExample);
+const test = await fetchApi(
+  apiURL + "/api/equipment-categories/adventuring-gear"
+);
+console.log(test);
 
-let activeScreen = startPage;
-
-/*
- *Alle funksjoner skal ta inn ett av eksemplene som parameter.
- *Dette gjøres ved å si først til funksjonen din når du lager den, at du vil ha et parameter
- *kodestruktur:
- *const fetchMonsters = (parameterObject) => {
- *Så bruker du parameteret inni funksjonen
- *   console.log(parameterObject)
- *
- * }
- *
- * Når du caller på (kjører) funksjonen senere, så legger du eksempelobjektet inn i funksjonen.
- *
- * fetchMonsters(monsterExample)
- *
- *Da vil funksjonen erstatte parameterObject med monsterExample i koden du har, og kjøre koden din med monsterExample.
- *
- * I eksempelet over ender du opp med at monsterExample blir consol logget.
- *
- *
- */
-
-/**
- * Funksjon som lager html element
- * @param {*} type hvilken type element du vil ha, string. f.eks "div"
- * @param {*} parameters hvilke parametere du vil gi elementet, f.eks {classname: "container"}
- */
-const makeElements = (type, parameters) => {
-  const element = document.createElement(type);
-  Object.entries(parameters).forEach((entry) => {
-    let [propertyKey, propertyValue] = entry;
-    element[propertyKey] = propertyValue;
-  });
-  return element;
-};
-
-/**
- * Setter hvilke div som skal vises til en hver tid.
- * @param {*} screenElement hvilket element som skal vises.
- */
-const setActiveScreen = (screenElement) => {
-  activeScreen.style.display = "none";
-  activeScreen = screenElement;
-  activeScreen.style.display = "flex";
-};
-
-/* For å lage en brukervennlig navbar må index fra API struktureres litt annerledes. */
-
-/* NAVBAR START*/
-/**
- * Lager et nytt object basert på API, strukturert så navBar i topp får fem knapper med hver sin undermeny.
- * er mye mer leslig en det orginale objektet.
- * @param {*} object tar inn indexen til API
- * @returns ferdig strukturert object.
- */
-
-const makeNavBarObject = async (object) => {
-  const navBarObject = {};
-  navBarObject.generalRules = {
-    subMenu: {
-      "Ability Scores": object["ability-scores"],
-      Feats: object["feats"],
-      Conditions: object["conditions"],
-      Features: object["features"],
-      "Damage Types": object["damage-types"],
-      Proficiencies: object["proficiencies"],
-      Traits: object["traits"],
-      "Magic Schools": object["magic-schools"],
-      Backgrounds: object["backgrounds"],
-      Alignments: object["alignments"],
-      Rules: object["rules"],
-    },
-    name: "General Rules",
-  };
-  navBarObject.classes = {
-    name: "Classes",
-    allClasses: object["classes"],
-    subMenu: {},
-  };
-  let fetchClasses = await fetchApi(`${apiURL}${object["classes"]}`);
-  for (let classID of fetchClasses.results) {
-    navBarObject.classes.subMenu[classID.index] = classID;
-  }
-  navBarObject.races = {
-    name: "Races",
-    allRaces: object["races"],
-    subMenu: {},
-  };
-  let fetchRaces = await fetchApi(`${apiURL}${object["races"]}`);
-  for (let race of fetchRaces.results) {
-    navBarObject.races.subMenu[race.index] = race;
-  }
-  navBarObject.equipment = {
-    name: "Equipment",
-    subMenu: {
-      Categories: object["equipment-categories"],
-      "Normal Equipment": object["equipment"],
-      "Magic Items": object["magic-items"],
-    },
-  };
-  navBarObject.monsters = {
-    name: "Monsters",
-    allMonsters: object["monsters"],
-  };
-  return navBarObject;
-};
-const setActiveMonster = async (monsterURL) => {
-  monsterExample = await fetchApi(apiURL + monsterURL);
-};
-/**
- * ser om navbar allerede er lagret i localStorage, så siden slipper å gjøre en ny API call.
- * Siden navbar er ganske statisk føler jeg dette er en god måte å gjøre det på. det gjør at
- * etter første siteload blir navbaren en mindre belastning på api.
- * @returns
- */
-const fetchNavBarObject = async () => {
-  let navBarObject = JSON.parse(localStorage.getItem("dndNavBarObject")) || 0;
-  if (navBarObject === 0) {
-    const index = await fetchApi(apiIndex);
-    navBarObject = await makeNavBarObject(index);
-    localStorage.setItem("dndNavBarObject", JSON.stringify(navBarObject));
-  }
-  return navBarObject;
-};
-let menuOpen = false;
-let currentTarget = "";
-let allResults = [];
+/* Søkefunksjoner */
 
 /**
  * Bruker en annen api, og normaliserer til vår api for å lage en søkefunksjon. Vår valgte API mangler enkel søkefunksjon.
  * @param {*} string input
  * @returns
  */
-const searchFunction = async (string) => {
-  for (let child of resultScreen.children) {
-    child.remove();
-  }
-  setActiveScreen(resultScreen);
+const searchFunction = async (string, item = null) => {
+  //Fjerner alle gamle "children" fra resultScreen og resetter searchElements
+  searchElements.forEach((element) => element.remove());
+  searchElements = [];
+  let searchResult = [];
   //Mindre nøyaktig søkefunksjon, går via en annen api. gir flere resultater, men mangler mye.
   const normalizedString = string.toLowerCase();
-  const results = await fetchApi(
-    searchAPIURL + normalizedString + "&document_slug=wotc-srd"
-  );
-  results.results.forEach(async (result) => {
-    let name = result.name.toLowerCase();
-    if (name === "weapons" || name === "armor") name = normalizedString;
-    const normalizedName = name.split(" ").join("-");
-    let index = result.route.toLowerCase();
-    if (index === "magicitems/") index = "magic-items/";
-    if (index === "sections/") index = "equipment/";
-    const newSearchApi = `${apiURL}/api/${index}${normalizedName}`;
-    const searchResult = await fetchApi(newSearchApi);
-    if (searchResult === "Nothing Found!") return;
-    else {
-      const resultName = makeElements("button", {
-        className: "resultName descriptionText darkMode",
-        innerText: searchResult.name,
-        value: searchResult.url,
-      });
-      resultName.addEventListener("click", async () => {
-        await setActiveMonster(resultName.value);
-        displayMonsterInfo(monsterExample);
-        setActiveScreen(infoCard);
-        history.pushState({ page_id: "displayMonster" }, "");
-      });
-      resultScreen.appendChild(resultName);
-      if (!searchResult.desc) return;
-      else {
-        if (typeof searchResult.desc === "object") {
-          for (let desc of searchResult.desc) {
-            const resultDesc = makeElements("p", {
-              className: "resultDesc buttonText darkMode",
-              innerText: desc,
-            });
-            resultScreen.appendChild(resultDesc);
-          }
-        } else {
-          const resultDesc = makeElements("p", {
-            className: "resultDesc buttonText darkMode",
-            innerText: searchResult.desc,
-          });
-          resultScreen.appendChild(resultDesc);
-        }
-        history.pushState({ page_id: "search" }, "");
-      }
-    }
+  let searchData = item || searchDatabase.data;
+  searchData.forEach((data) => {
+    console.log(data);
+    arraySearch(searchResult, data, normalizedString);
   });
-  /* 
-  //Mer direkte søkefunksjon, men søket må være svært nøyaktig.
-  const normalizedString = string.toLowerCase().split(" ").join("-");
-  Object.keys(indexExample).forEach(async (category) => {
-    const result = await fetchApi(
-      `${apiURL}/api/${category}/${normalizedString}`
-    );
-    if (result === "Nothing Found!") return;
-    else allResults.push(result);
-  }); */
+  console.log(searchResult);
+  //Går gjennom alle resultatene og normaliserer svarene til vår apitype. Noe her kan gjøres bedre. men beste er nok å faktisk skifte API vi bruker på siden.
+
+  //Lager nye child elementer til resultScreen basert på søkeresultatene.
+  if (activeScreen !== resultScreen) setActiveScreen(resultScreen);
+  for (let result of searchResult) {
+    const fetchedData = await fetchApi(apiURL + result.url);
+    appendResults(fetchedData);
+  }
 };
 
+const arraySearch = (mainArray, array, searchString) => {
+  if (array.length === 0) return;
+  let searchArray = array.map((x) => x);
+  let string = searchString;
+  //Find leter etter strings
+  let result = searchArray.find((searchElement) =>
+    searchElement.index?.includes(string)
+  );
+  console.log(result);
+  if (result === undefined) return;
+  else {
+    mainArray.push(result);
+    searchArray.splice(searchArray.indexOf(result), 1, "");
+    return arraySearch(mainArray, searchArray, searchString);
+  }
+};
+
+const appendResults = async (searchResult) => {
+  const resultName = makeElements("button", {
+    className: "resultName descriptionText darkMode",
+    innerText: searchResult.name,
+    value: searchResult.url,
+  });
+  resultName.addEventListener("click", async () => {
+    await setActiveMonster(resultName.value);
+    resultName.value.includes("monsters")
+      ? (displayMonsterInfo(monsterExample), setActiveScreen(infoCard))
+      : displaySearchItem(resultName.value);
+  });
+  searchElements.push(resultName);
+  resultScreen.appendChild(resultName);
+  if (!searchResult.desc) return;
+  if (typeof searchResult.desc === "object") {
+    for (let desc of searchResult.desc) {
+      const resultDesc = makeElements("p", {
+        className: "resultDesc buttonText darkMode",
+        innerText: desc,
+      });
+      resultScreen.appendChild(resultDesc);
+      searchElements.push(resultDesc);
+    }
+  } else {
+    const resultDesc = makeElements("p", {
+      className: "resultDesc buttonText darkMode",
+      innerText: searchResult.desc,
+    });
+    resultScreen.appendChild(resultDesc);
+    searchElements.push(resultDesc);
+  }
+};
+
+//Eventlistener til søkeknappen
 searchBtn.addEventListener(
   "click",
   async () => await searchFunction(searchField.value)
 );
 
-const desktopButtonDisplay = (navBarObject) => {
-  const navBtnContainer = makeElements("div", {
-    className: "navBtnContainer",
-  });
-  Object.keys(navBarObject).forEach((category) => {
-    const btn = makeElements("div", {
-      className: "btnTextOnly btnText navBarBtn",
-      innerText: navBarObject[category].name,
-      id: category,
-    });
-    btn.addEventListener("mouseover", (event) =>
-      subMenuGenerator(event, category, navBarObject)
-    );
-    navBtnContainer.appendChild(btn);
-  });
-
-  navBtnContainer.addEventListener("mouseover", (event) => {
-    if (!subMenuOpen) return;
-    else if (event.target === navBtnContainer) subMenuRemover();
-  });
-  return navBtnContainer;
-};
-
-const mobileButtonDisplay = (navBarObject, headerElement) => {
-  const hamButton = makeElements("div", { className: "hamBtn" });
-  const hamSVG = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  const svgAttributes = {
-    width: "3em",
-    height: "3em",
-    viewBox: "0 0 48 48",
-  };
-  Object.entries(svgAttributes).forEach((attribute) => {
-    let [attributeName, attributeValue] = attribute;
-    hamSVG.setAttribute(attributeName, attributeValue);
-  });
-  const hamPath1 = document.createElementNS(
-    "http://www.w3.org/2000/svg",
-    "path"
-  );
-  hamPath1.setAttribute("d", "M7.94971 11.9497H39.9497");
-  const hamPath2 = document.createElementNS(
-    "http://www.w3.org/2000/svg",
-    "path"
-  );
-  hamPath2.setAttribute("d", "M7.94971 23.9497H39.9497");
-  const hamPath3 = document.createElementNS(
-    "http://www.w3.org/2000/svg",
-    "path"
-  );
-  hamPath3.setAttribute("d", "M7.94971 35.9497H39.9497");
-
-  const pathAttributes = {
-    fill: "none",
-    stroke: "#2f3437",
-    "stroke-linecap": "round",
-    "stroke-linejoin": "round",
-    "stroke-width": "4",
-    class: "arm",
-  };
-
-  let armArray = [hamPath1, hamPath2, hamPath3];
-  armArray.forEach((arm) => {
-    Object.entries(pathAttributes).forEach((attribute) => {
-      let [attributeName, attributeValue] = attribute;
-      arm.setAttribute(attributeName, attributeValue);
-    });
-    hamSVG.appendChild(arm);
-  });
-  hamButton.appendChild(hamSVG);
-  headerElement.appendChild(hamButton);
-  const hamMenu = makeElements("div", { className: "hamMenu" });
-  Object.keys(navBarObject).forEach((category) => {
-    const btn = makeElements("div", {
-      className: "hamMenuBtn",
-      innerText: navBarObject[category].name,
-      id: category,
-    });
-    btn.addEventListener("click", (event) =>
-      mobileSubMenuGenerator(event, category, navBarObject)
-    );
-    hamMenu.appendChild(btn);
-  });
-  hamButton.addEventListener("click", () => {
-    if (menuOpen) {
-      hamMenu.style.display = "none";
-      menuOpen = false;
-      for (let i = 0; i < armArray.length; i++) {
-        armArray[i].classList.remove(`armAnim${i + 1}`);
-      }
-    } else {
-      hamMenu.style.display = "flex";
-      menuOpen = true;
-      for (let i = 0; i < armArray.length; i++) {
-        armArray[i].classList.add(`armAnim${i + 1}`);
-      }
-    }
-  });
-  return hamMenu;
-};
-
-/* DROPDOWN MENU DESKTOP! */
-let subMenuOpen = false;
-let menuElements = [];
-let btnId = 0;
-const subMenuGenerator = (event, category, navBarObject) => {
-  const selectedBtn = event.target;
-  if (subMenuOpen) {
-    return;
-  } else if (!navBarObject[category].subMenu) {
-    return;
-  } else {
-    btnId = 0;
-    const subMenu = makeElements("div", {
-      className: "subMenu navDark sideBorders",
-    });
-    Object.keys(navBarObject[category].subMenu).forEach((subCat) => {
-      const btn = makeElements("button", {
-        className: "btnTextOnly btnTextNoBold subMenuBtn",
-        innerText: subCat,
-        id: subCat,
-      });
-      btnId++;
-      btn.style.animationDelay = `${btnId * 25}ms`;
-      subMenu.appendChild(btn);
-      menuElements.push(subMenu);
-      subMenu.addEventListener("mouseleave", () => subMenuRemover());
-    });
-    selectedBtn.appendChild(subMenu);
-    subMenuOpen = true;
-  }
-};
-const subMenuRemover = () => {
-  if (!subMenuOpen) return;
-  else {
-    menuElements.forEach((element) => element.remove());
-    menuElements = [];
-    subMenuOpen = false;
-  }
-};
-
-const mobileSubMenuGenerator = (event, category, navBarObject) => {
-  const selectedBtn = event.target;
-  if (subMenuOpen) {
-    menuElements.forEach((element) => element.remove());
-    menuElements = [];
-    subMenuOpen = false;
-    if (selectedBtn != currentTarget) {
-      currentTarget = selectedBtn;
-      mobileSubMenuGenerator(event, category, navBarObject);
-    }
-  } else {
-    currentTarget = selectedBtn;
-    btnId = 0;
-    const subMenu = makeElements("div", {
-      className: "mobileSubMenu navDark",
-    });
-    Object.keys(navBarObject[category].subMenu).forEach((subCat) => {
-      const btn = makeElements("button", {
-        className: "btnTextOnly btnTextNoBold subMenuBtn",
-        innerText: subCat,
-        id: subCat,
-      });
-      btnId++;
-      btn.style.animationDelay = `${btnId * 25}ms`;
-      subMenu.appendChild(btn);
-      menuElements.push(subMenu);
-    });
-    selectedBtn.appendChild(subMenu);
-    subMenuOpen = true;
-  }
-};
-
-const mobileCheck = (navBarObject, headerElement) => {
-  if (window.navigator.userAgentData.mobile || window.innerWidth < 600)
-    return mobileButtonDisplay(navBarObject, headerElement);
-  else return desktopButtonDisplay(navBarObject);
-};
-
-const navBarMaker = async () => {
-  const navBarObject = await fetchNavBarObject();
-  const headerElement = makeElements("header", { className: "navBar navDark" });
-  const logoContainer = makeElements("div", { className: "logoContainer" });
-  const logo = makeElements("img", { src: "./img/logo.svg" });
-  logoContainer.appendChild(logo);
-  headerElement.appendChild(logoContainer);
-  const navBtnContainer = mobileCheck(navBarObject, headerElement);
-  headerElement.appendChild(navBtnContainer);
-  document.body.prepend(headerElement);
-};
-
-await navBarMaker();
+//Eventlistener til searchField. gjør at vi kan trykke enter for å søke.
+searchField.addEventListener("keydown", async (event) => {
+  if (event.code !== "Enter") return;
+  else await searchFunction(searchField.value);
+});
 
 /* NAVBAR END */
+
+/* dragonList */
+const mainContainer = document.getElementById("main-container");
+const buttonHome = document.getElementById("home-btn");
+const buttonPrev = document.getElementById("previouse-btn");
+const buttonNext = document.getElementById("next-btn");
+
+const baseUrl = "https://www.dnd5eapi.co/api/monsters";
+
+let currentDragonList = {
+  count: 0,
+  next: "",
+  previous: "",
+  results: [],
+};
+
+async function getDragonList(url) {
+  const response = await fetch(url || baseUrl);
+  if (response.status !== 200) {
+    console.warn("noe gikk galt");
+    return;
+  }
+  const data = await response.json();
+  console.log(data);
+
+  currentDragonList = data;
+
+  displayDragonList(data.results);
+  setActiveScreen(mainContainer);
+}
+
+await getDragonList(baseUrl);
+
+function displayDragonList(dragonList) {
+  mainContainer.innerHTML = "";
+  dragonList.forEach(async (dragon) => {
+    const dragonDetailData =
+      /* await getDragonDetails(dragon.url); */ await fetchApi(
+        apiURL + dragon.url
+      );
+    console.log(dragonDetailData);
+    if (dragonDetailData.image) {
+      const dragonImg = document.createElement("img");
+      dragonImg.src = apiURL + dragonDetailData.image;
+    }
+    const containerEl = document.createElement("div");
+    const dragonNameEl = document.createElement("h3");
+    dragonNameEl.textContent = dragon.name;
+  });
+}
 //monsterCard image maker
 const cardImage = document.createElement("img");
 
@@ -449,51 +220,6 @@ cardImage.setAttribute("height", "300");
 cardImgContainer.appendChild(cardImage);
 
 console.log(apiURL + monsterExample.image);
-
-const mainContainer = document.getElementById("main-container")
-const buttonHome = document.getElementById("home-btn")
-const buttonPrev = document.getElementById("previouse-btn")
-const buttonNext = document.getElementById("next-btn")
-
-const baseUrl = "https://www.dnd5eapi.co/api/monsters"
-
-let currentDragonList = {
-    count: 0,
-    next: "",
-    previous: "",
-    results: []
-}
-
-async function getDragonList(url) {
-    const response=await fetch(url || baseUrl)
-    if (response.status !== 200) {
-        console.warn("noe gikk galt")
-        return
-    }
-    const data = await response.json()
-    console.log(data)
-
-    currentDragonList = data
-
-    displayDragonList(data.results)
-}
-
-getDragonList(baseUrl) 
-
-function displayDragonList(){
-    mainContainer.innerHTML = ""
-    dragonList.forEach(async (dragon) => {
-        const dragonDetailData = await getDragonDetails(pokemon.url)
-        const dragonImg = dragonDetailData.sprites.other["official-artwork"]
-        
-        const containerEl = document.createElement("div")
-        const dragonNameEl = document.createElement("h3")
-        dragonNameEl.textContent = dragon.name
-
-})
-}
-
-
 
 //monsterCard text content maker
 const monsterName = document.createElement("h1");
@@ -652,6 +378,7 @@ const displayMonsterInfo = (monsterExample) => {
     console.log(legendaryAction);
   }
   console.log(monsterExample.legendary_actions);
-  console.log("test")
+  console.log("test");
 };
 setActiveScreen(startPage);
+headerLogo.addEventListener("click", () => setActiveScreen(startPage));
