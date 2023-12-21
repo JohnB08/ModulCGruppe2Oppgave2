@@ -31,7 +31,7 @@ await navBarMaker();
 const headerLogo = document.querySelector(".headerLogo");
 
 /* globale variabler */
-const searchDatabase = await fetchApi("../js/searchDatabase/searchObject.JSON");
+const searchDatabase = await fetchApi("./js/searchDatabase/searchObject.JSON");
 console.log(searchDatabase.data);
 let searchElements = [];
 
@@ -193,7 +193,7 @@ async function getDragonList(url) {
   setActiveScreen(mainContainer);
 }
 
-await getDragonList(baseUrl);
+/* await getDragonList(baseUrl); */
 
 function displayDragonList(dragonList) {
   mainContainer.innerHTML = "";
