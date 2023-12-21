@@ -31,8 +31,12 @@ await navBarMaker();
 const headerLogo = document.querySelector(".headerLogo");
 
 /* globale variabler */
-const searchDatabase = await fetchApi("./js/searchDatabase/searchObject.JSON");
-console.log(searchDatabase.data);
+const dataBaseFetcher = async () => {
+  const fetchedData = await fetch("./js/searchDatabase/searchObject.json");
+  const result = await fetchedData.json();
+  return result;
+};
+const searchDatabase = await dataBaseFetcher();
 let searchElements = [];
 
 /**
