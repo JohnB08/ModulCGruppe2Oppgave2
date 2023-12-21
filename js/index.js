@@ -32,7 +32,7 @@ const headerLogo = document.querySelector(".headerLogo");
 
 /* globale variabler */
 const dataBaseFetcher = async () => {
-  const fetchedData = await fetch("./js/searchDatabase/searchObject.json");
+  const fetchedData = await fetch("./js/searchDatabase/searchObject.JSON");
   const result = await fetchedData.json();
   return result;
 };
