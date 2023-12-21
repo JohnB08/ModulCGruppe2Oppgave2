@@ -42,6 +42,9 @@ const fetchNextIndex = async (fullIndex) => {
   console.log("write successfull");
 };
 
+/**
+ * Funksjon som lager selve objektet, sender det videre til fetchNextIndex som fyller underobjektet .data
+ */
 const objectMaker = async () => {
   console.log("fetching index");
   let fullIndex = {};
