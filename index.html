@@ -4,8 +4,46 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="./css/style.css" />
-    <script src="./js/index.js"></script>
+    <script src="./js/index.js" type="module"></script>
   </head>
-  <body></body>
+  <body>
+    <div>
+      
+    </div>
+    <div id="main-container">
+      <button id="home-btn"></button>
+      <button id="previous-btn"></button>
+      <button id="next-btn"></button>
+  </div>
+    <div class="searchContainer">
+      <input type="text" name="" id="searchField" />
+      <button class="searchBtn">Search</button>
+    </div>
+    <div class="itemInfo"></div>
+
+    <div class="startPage darkMode">
+      <div class="startPageLogo"><img src="./img/logo.svg" alt="Logo" /></div>
+      <h1 class="headerText">
+        Rule Lawyer <br />
+        DnD fifth Edition Rule lookup
+      </h1>
+      <h2 class="subHeaderText">
+        This page lets you navigate the Dungeons and Dragons fifth Edition
+        Ruleset <br />
+        using the dnd5eapi.co api
+      </h2>
+    </div>
+    <div class="info-card">
+      <div class="card-img"></div>
+      <div class="monster-stats"></div>
+    </div>
+    <div class="resultScreen"></div>
+  </body>
 </html>

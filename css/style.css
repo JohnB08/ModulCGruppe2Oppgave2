@@ -1,0 +1,285 @@
+:root {
+  --light: #f6f7eb;
+  --dark: #2f3437;
+  --accent: #c73032;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-areas:
+    "nav nav nav"
+    ". info search "
+    ". info . "
+    ". info . ";
+  grid-template-rows: 6rem 4rem 1fr;
+  grid-template-columns: 1fr 3fr 1fr;
+  height: auto;
+  background: var(--dark);
+}
+
+/* TEXT CLASSER */
+span{
+  font-weight: bold;
+}
+.headerText {
+  font: bold 48px/50px "Open Sans", sans-serif;
+  letter-spacing: 105%;
+}
+
+.subHeaderText {
+  font: bold 24px/28px "Open Sans", sans-serif;
+  letter-spacing: 105%;
+}
+.btnText {
+  font: bold 16px/32px "Open Sans", sans-serif;
+  letter-spacing: 110%;
+}
+
+.descriptionText {
+  font: 24px/28px "Open Sans", sans-serif;
+  letter-spacing: 105%;
+}
+
+.btnTextNoBold {
+  font: 16px/24px "Open Sans", sans-serif;
+  letter-spacing: 105%;
+}
+
+/* -------- */
+.searchContainer {
+  grid-area: search;
+  place-self: start;
+  justify-self: end;
+  background-color: var(--light);
+  padding: 1rem 3rem;
+}
+.info-card {
+  background-color: var(--light);
+  display: none;
+  grid-area: info;
+  place-self: center;
+  flex-direction: column;
+  /*IKKE GJØR SOM JOHN SIER*/
+}
+.darkMode {
+  background-color: var(--dark);
+  color: var(--light);
+}
+
+.navDark {
+  background-color: var(--light);
+  color: var(--dark);
+  border-bottom: 4px solid var(--accent);
+}
+
+.navBar {
+  grid-area: nav;
+  position: relative;
+  display: flex;
+  width: 100vw;
+  justify-content: space-around;
+  align-items: end;
+}
+
+.logoContainer {
+  width: 20%;
+}
+.headerLogo {
+  width: 100%;
+  transition: 250ms;
+}
+.headerLogo:hover {
+  filter: brightness(0) saturate(100%) invert(16%) sepia(8%) saturate(690%)
+    hue-rotate(159deg) brightness(98%) contrast(88%);
+  transform: scale(105%);
+  cursor: pointer;
+}
+
+.navBtnContainer {
+  width: 60%;
+  display: flex;
+  padding: 10px 10px 0 10px;
+  justify-content: space-around;
+}
+.btnTextOnly {
+  background: none;
+  border: none;
+  text-decoration: underline;
+}
+.navBarBtn {
+  width: 10rem;
+  text-align: center;
+  transition: 250ms;
+  position: relative;
+}
+
+.btnTextOnly:hover {
+  cursor: pointer;
+  transform: scale(110%);
+  color: var(--accent);
+}
+
+.sideBorders {
+  border-left: 4px solid var(--accent);
+  border-right: 4px solid var(--accent);
+}
+
+.subMenu {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 10rem;
+  padding: 10px 0;
+  gap: 10px;
+  opacity: 0;
+  animation: 500ms ease-in-out reverse dropDown;
+  animation-fill-mode: forwards;
+}
+@keyframes dropDown {
+  0% {
+    opacity: 100%;
+  }
+}
+
+.subMenuBtn {
+  position: absolute;
+  opacity: 0;
+  animation: 25ms ease-in-out reverse btnDropDown;
+  animation-fill-mode: forwards;
+}
+
+@keyframes btnDropDown {
+  0% {
+    position: static;
+    opacity: 100%;
+  }
+}
+.hamBtn {
+  z-index: 3;
+}
+
+.hamMenu {
+  display: none;
+  position: absolute;
+  flex-direction: column;
+  padding: 100px 20px;
+  gap: 20px;
+  width: 50vw;
+  height: 100vh;
+  background: var(--light);
+  right: 0;
+  top: 0;
+  z-index: 2;
+}
+.mobileSubMenu {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: 10px;
+}
+.arm {
+  transition: 300ms ease-in;
+}
+
+.armAnim1 {
+  transform: translate(16px) rotate(45deg);
+}
+.armAnim2 {
+  opacity: 0%;
+}
+.armAnim3 {
+  transform: translate(-18px, 17px) rotate(-45deg);
+}
+.startPage {
+  display: none;
+  grid-area: info;
+  max-width: 1000px;
+  height: 60vh;
+  text-align: center;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  place-self: center;
+}
+.startPageLogo {
+  width: 90%;
+}
+.startPageLogo img {
+  width: 100%;
+}
+
+.resultScreen {
+  grid-area: info;
+  place-self: center;
+  display: flex;
+  flex-direction: column;
+  max-width: 1000px;
+  max-height: 80vh;
+  overflow-y: scroll;
+}
+
+.resultName {
+  border: 0;
+  padding: 0.25rem 0;
+  text-align: center;
+  margin: 0.5rem 0;
+  transition: 250ms;
+  width: 50%;
+}
+.resultName:hover,
+.resultName:focus {
+  outline: none;
+  cursor: pointer;
+  transform: scale(105%);
+}
+.resultDesc {
+  margin: 0.25rem 0;
+}
+
+.itemInfo {
+  grid-area: info;
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  max-height: 80vh;
+  max-width: 1000px;
+}
+.itemDesc span {
+  font-weight: bold;
+}
+
+@media only screen and (max-width: 600px) {
+  body {
+    grid-template-areas:
+      "nav nav nav nav"
+      "search search search search"
+      ". info info. "
+      ". info info .";
+  }
+  .descriptionText {
+    font-size: 16px;
+  }
+  .headerText {
+    font-size: 36px;
+  }
+  .subHeaderText {
+    font-size: 18px;
+  }
+  .btnText {
+    font-size: 12px;
+  }
+  .btnTextNoBold {
+    font-size: 12px;
+  }
+  .logoContainer {
+    width: 50%;
+  }
+}
