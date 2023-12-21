@@ -12,6 +12,7 @@
 
 body {
   display: grid;
+  grid-template-columns: repeat(4, 1fr);
   grid-template-areas:
     "nav nav nav"
     ". info search "
@@ -24,7 +25,9 @@ body {
 }
 
 /* TEXT CLASSER */
-
+span{
+  font-weight: bold;
+}
 .headerText {
   font: bold 48px/50px "Open Sans", sans-serif;
   letter-spacing: 105%;
@@ -58,6 +61,7 @@ body {
   padding: 1rem 3rem;
 }
 .info-card {
+  background-color: var(--light);
   display: none;
   grid-area: info;
   place-self: center;
