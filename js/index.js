@@ -22,7 +22,7 @@ const allMonstersUrl = "https://www.dnd5eapi.co/api/monsters";
 
 const allMonstersExample = await fetchApi(allMonstersUrl);
 
-const monsterUrl = "https://www.dnd5eapi.co/api/monsters/acolyte";
+const monsterUrl = "https://www.dnd5eapi.co/api/monsters/adult-black-dragon";
 
 let monsterExample = await fetchApi(monsterUrl);
 
@@ -212,17 +212,17 @@ const searchFunction = async (string) => {
       resultScreen.appendChild(resultName);
       if (!searchResult.desc) return;
       else {
-        if (searchResult.desc === []) {
+        if (typeof searchResult.desc === "object") {
           for (let desc of searchResult.desc) {
             const resultDesc = makeElements("p", {
-              className: "resultName buttonText darkMode",
+              className: "resultDesc buttonText darkMode",
               innerText: desc,
             });
             resultScreen.appendChild(resultDesc);
           }
         } else {
           const resultDesc = makeElements("p", {
-            className: "resultName buttonText darkMode",
+            className: "resultDesc buttonText darkMode",
             innerText: searchResult.desc,
           });
           resultScreen.appendChild(resultDesc);
@@ -441,7 +441,6 @@ const navBarMaker = async () => {
 await navBarMaker();
 
 /* NAVBAR END */
-
 //monsterCard image maker
 const cardImage = document.createElement("img");
 
@@ -511,6 +510,8 @@ const monsterProficiencyBonus = document.createElement("p");
 const monsterSpecialAbility = document.createElement("p");
 const monsterAction = document.createElement("p");
 const monsterDescription = document.createElement("p");
+const monsterLegendaryAction = document.createElement("p");
+
 const displayMonsterInfo = (monsterExample) => {
   cardImage.src = apiURL + monsterExample.image;
 
@@ -518,66 +519,139 @@ const displayMonsterInfo = (monsterExample) => {
   cardTextContainer.appendChild(monsterName);
 
   //size, race and alignment display
-  monsterSize.textContent = `${monsterExample.size}, ${monsterExample.type}, ${monsterExample.alignment}`;
+  monsterSize.innerHTML = `${monsterExample.size}, ${monsterExample.type}, ${monsterExample.alignment}`;
   cardTextContainer.appendChild(monsterSize);
 
   //create armor information
-  monsterArmor.textContent = `Armor Class ${monsterExample.armor_class[0].value}`;
-  cardTextContainer.appendChild(monsterArmor);
+  if (!monsterExample.armor_class) return;
+  else {
+    monsterArmor.innerHTML = `<span>Armor Class</span> ${monsterExample.armor_class[0].value}`;
+    cardTextContainer.appendChild(monsterArmor);
+  }
 
   //hit points display
-  monsterHP.textContent = `Hit Point ${monsterExample.hit_points} (${monsterExample.hit_points_roll})`;
-  cardTextContainer.appendChild(monsterHP);
+  if (!monsterExample.hit_points) return;
+  else {
+    monsterHP.innerHTML = `<span>Hit Point</span> ${monsterExample.hit_points} (${monsterExample.hit_points_roll})`;
+    cardTextContainer.appendChild(monsterHP);
+  }
 
   //speed value display
-  monsterSpeed.textContent = `Speed ${monsterExample.speed.walk}`;
-  cardTextContainer.appendChild(monsterSpeed);
+  if (!monsterExample.speed.walk) return;
+  else {
+    monsterSpeed.innerHTML = `<span>Speed</span> ${monsterExample.speed.walk}`;
+    cardTextContainer.appendChild(monsterSpeed);
+  }
 
   //Monster stats display
-  monsterStats.textContent = `STR ${monsterExample.strength} DEX ${monsterExample.dexterity} CON ${monsterExample.constitution} INT ${monsterExample.intelligence} WIS ${monsterExample.wisdom} CHA ${monsterExample.charisma}`;
+  monsterStats.innerHTML = `<span>STR</span> ${monsterExample.strength} <span>DEX</span> ${monsterExample.dexterity} <span>CON</span> ${monsterExample.constitution} <span>INT</span> ${monsterExample.intelligence} <span>WIS</span> ${monsterExample.wisdom} <span>CHA</span> ${monsterExample.charisma}`;
   cardTextContainer.appendChild(monsterStats);
 
   //Monster skill display
-  //fix a better method which makes it able to register monster with more than 2 skills
-  monsterSkill.textContent = `Skills ${monsterExample.proficiencies[0].proficiency.name.slice(
-    6
-  )} +${
-    monsterExample.proficiencies[0].value
-  }, ${monsterExample.proficiencies[1].proficiency.name.slice(6)} +${
-    monsterExample.proficiencies[1].value
-  }`;
-  cardTextContainer.appendChild(monsterSkill);
+  if (!monsterExample.proficiencies) return;
+  else {
+    let monsterSkills = ` `;
+    for (let i = 0; i < monsterExample.proficiencies.length; i++) {
+      const dupeRemover = monsterExample.proficiencies[i].proficiency.name;
+      // .split(":")
+      // .pop();
+      console.log(dupeRemover);
+      monsterSkills += `<span>${dupeRemover}</span> +${monsterExample.proficiencies[i].value}<br>`;
+      monsterSkill.innerHTML = `<span>Skills:</span><br> ${monsterSkills}`;
+    }
 
-  //Monster sense Display
+    cardTextContainer.appendChild(monsterSkill);
+  }
+  // monsterSkill.innerHTML = `<span>Skills</span>`
+  // Object.entries(monsterExample.proficiencies).forEach((sense) => {
+  //   let [proficienciesName, proficienciesValue] = skills
+  // })
+  cardTextContainer.appendChild(monsterSkill);
+  // Monster sense Display
   // find a way to remove "_" in propertynames
-  monsterSense.textContent = `Senses ${Object.getOwnPropertyNames(
-    monsterExample.senses
-  )} ${Object.values(monsterExample.senses)}`;
+  if (!monsterExample.senses) return;
+  else {
+    // monsterSense.textContent = "senses: ";
+
+    // Object.entries(monsterExample.senses).forEach((sense) => {
+    //   let [senseName, senseValue] = sense;
+
+    //   if (senseName.includes("_")) {
+    //     senseName = senseName.split("_").join(" ");
+    //   }
+    // });
+    // monsterSense.textContent += `${senseName}: ${senseValue}`
+    monsterSense.innerHTML = `<span>Senses </span> ${Object.getOwnPropertyNames(
+      monsterExample.senses
+    )}  ${Object.values(monsterExample.senses)}`;
+  }
   cardTextContainer.appendChild(monsterSense);
 
   //Monster Language Display
-  monsterLanguage.textContent = `Languages ${monsterExample.languages}`;
-  cardTextContainer.appendChild(monsterLanguage);
+  if (!monsterExample.languages) return;
+  else {
+    monsterLanguage.innerHTML = `<span>Languages</span> ${monsterExample.languages}`;
+    cardTextContainer.appendChild(monsterLanguage);
+  }
 
   //Monster xp and challenge rating
-  monsterExp.textContent = `Challenge ${monsterExample.challenge_rating} (${monsterExample.xp} XP)`;
-  cardTextContainer.appendChild(monsterExp);
+  if (!monsterExample.xp) return;
+  else {
+    monsterExp.innerHTML = `<span>Challenge</span> ${monsterExample.challenge_rating} (${monsterExample.xp} XP)`;
+    cardTextContainer.appendChild(monsterExp);
+  }
 
   //Monster proficiency bonus display
-  monsterProficiencyBonus.textContent = `Proficiency Bonus +${monsterExample.proficiency_bonus}`;
-  cardTextContainer.appendChild(monsterProficiencyBonus);
+  if (!monsterExample.proficiency_bonus) return;
+  else {
+    monsterProficiencyBonus.innerHTML = `<span>Proficiency Bonus</span> +${monsterExample.proficiency_bonus}`;
+    cardTextContainer.appendChild(monsterProficiencyBonus);
 
-  //Monster Special ability
-  monsterSpecialAbility.textContent = `${monsterExample.special_abilities[0].name} ${monsterExample.special_abilities[0].desc}`;
-  cardTextContainer.appendChild(monsterSpecialAbility);
-
-  //Monster Action
-  monsterAction.textContent = `Action ${monsterExample.actions[0].name} ${monsterExample.actions[0].desc}`;
-  cardTextContainer.appendChild(monsterAction);
+    //Monster Special ability
+    if (!monsterExample.special_abilities) return;
+    else {
+      for (let i = 0; i < monsterExample.special_abilities.length; i++) {
+        monsterSpecialAbility.innerHTML += `<span>${monsterExample.special_abilities[i].name}</span> ${monsterExample.special_abilities[i].desc}<br>`;
+        console.log([i]);
+        cardTextContainer.appendChild(monsterSpecialAbility);
+      }
+    }
+  }
+  // Monster Action
+  if (!monsterExample.actions) return;
+  else {
+    let monsterActions = " ";
+    for (let i = 0; i < monsterExample.actions.length; i++) {
+      monsterActions += `<span>${monsterExample.actions[i].name}</span> ${monsterExample.actions[i].desc}<br>`;
+      monsterAction.innerHTML = `<span>Action</span><br> ${monsterActions}`;
+      cardTextContainer.appendChild(monsterAction);
+    }
+  }
 
   //Monster descprtion
-  monsterDescription.textContent = `Description ${monsterExample.desc}`;
-  cardTextContainer.appendChild(monsterDescription);
-};
+  if (!monsterExample.desc) return;
+  else {
+    monsterDescription.innerHTML = `<span>Description</span>: ${monsterExample.desc}`;
+    cardTextContainer.appendChild(monsterDescription);
+  }
 
+  // if (monsterExample.desc !== "object" || "undefined") {
+  //   monsterDescription.innerHTML = `<span>Description</span> ${monsterExample.desc}`;
+  //   cardTextContainer.appendChild(monsterDescription);
+  // }
+
+  if (!monsterExample.legendary_actions) return;
+  else {
+    let legendaryAction = "<span>Legendary Action:</span><br> ";
+    for (let i = 0; i < monsterExample.legendary_actions.length; i++) {
+      monsterLegendaryAction.innerHTML = `${monsterExample.legendary_actions[i].name} ${monsterExample.legendary_actions[i].desc} ${monsterExample.legendary_actions[i].damage}`;
+      // monsterLegendaryAction.innerHTML = legendaryAction;
+      cardTextContainer.appendChild(monsterLegendaryAction);
+      console.log(monsterLegendaryAction);
+    }
+    console.log(legendaryAction);
+  }
+  console.log(monsterExample.legendary_actions);
+  console.log("test")
+};
 setActiveScreen(startPage);
