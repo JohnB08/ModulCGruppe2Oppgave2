@@ -1,7 +1,7 @@
-import { fetchApi } from "./fetchApi.js";
-import { makeElements } from "./makeElements.js";
+import { fetchApi } from "./fetchApi.mjs";
+import { makeElements } from "./makeElements.mjs";
 import { hamButton } from "./hamburgerSVG.js";
-import { displaySearchItem } from "./displayItemInfo.js";
+import { displaySearchItem } from "./displayItemInfo.mjs";
 
 let menuOpen = false;
 let currentTarget = "";

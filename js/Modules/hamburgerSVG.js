@@ -1,6 +1,6 @@
 /* Modul som lager en svg med forhåndsinstilte classer osv.s */
 
-import { makeElements } from "./makeElements.js";
+import { makeElements } from "./makeElements.mjs";
 
 const hamButton = makeElements("div", { className: "hamBtn" });
 const hamSVG = document.createElementNS("http://www.w3.org/2000/svg", "svg");

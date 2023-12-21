@@ -1,6 +1,6 @@
-import { setActiveScreen } from "./setActiveScreen.js";
-import { fetchApi } from "./fetchApi.js";
-import { makeElements } from "./makeElements.js";
+import { setActiveScreen } from "./setActiveScreen.mjs";
+import { fetchApi } from "./fetchApi.mjs";
+import { makeElements } from "./makeElements.mjs";
 const itemInfo = document.querySelector(".itemInfo");
 let itemElements = [];
 

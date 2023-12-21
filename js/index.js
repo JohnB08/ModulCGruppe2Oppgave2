@@ -1,14 +1,14 @@
 /* Importer fra moduler */
 
-import { fetchApi } from "./Modules/fetchApi.js";
-import { makeElements } from "./Modules/makeElements.js";
-import { navBarMaker } from "./Modules/navBarMaker.js";
+import { fetchApi } from "./Modules/fetchApi.mjs";
+import { makeElements } from "./Modules/makeElements.mjs";
+import { navBarMaker } from "./Modules/navBarMaker.mjs";
 import {
   setActiveScreen,
   prevScreen,
   activeScreen,
-} from "./Modules/setActiveScreen.js";
-import { displaySearchItem } from "./Modules/displayItemInfo.js";
+} from "./Modules/setActiveScreen.mjs";
+import { displaySearchItem } from "./Modules/displayItemInfo.mjs";
 /* fetcher fra HTML */
 
 const infoCard = document.querySelector(".info-card");
@@ -31,21 +31,10 @@ await navBarMaker();
 const headerLogo = document.querySelector(".headerLogo");
 
 /* globale variabler */
-
+const searchDatabase = await fetchApi("../js/searchDatabase/searchObject.JSON");
+console.log(searchDatabase.data);
 let searchElements = [];
 
-window.addEventListener("popstate", (event) => {
-  console.log(event);
-  if (event.state === "startPage") setActiveScreen(startPage);
-  else if (event.target.location.pathname === "/search") {
-    searchFunction(event.state.stringKey, event.state);
-  } else if (event.target.location.pathname === "/info") {
-    displaySearchItem("", event.state);
-  } else if (event.target.location.pathname === "monster") {
-    displayMonsterInfo(event.state);
-    setActiveScreen(infoCard);
-  }
-});
 
 /**
  * Funksjon som finner et monster fra API og setter det som monsterExample variabelen.
@@ -91,42 +80,44 @@ const searchFunction = async (string, item = null) => {
   //Fjerner alle gamle "children" fra resultScreen og resetter searchElements
   searchElements.forEach((element) => element.remove());
   searchElements = [];
+  let searchResult = [];
   //Mindre nøyaktig søkefunksjon, går via en annen api. gir flere resultater, men mangler mye.
   const normalizedString = string.toLowerCase();
-  //Finner resultatet fra søkemotoren til searchAPI, limiter søket til innhold vår api har.
-  const results =
-    item ||
-    (await fetchApi(
-      searchAPIURL + normalizedString + "&document_slug=wotc-srd"
-    ));
-  results.stringKey = normalizedString;
-  //Går gjennom alle resultatene og normaliserer svarene til vår apitype. Noe her kan gjøres bedre. men beste er nok å faktisk skifte API vi bruker på siden.
-  results.results.forEach(async (result) => {
-    let name = result.name.toLowerCase();
-    if (name === "weapons" || name === "armor") name = normalizedString;
-    const normalizedName = name.split(" ").join("-");
-    let index = result.route.toLowerCase();
-    if (index === "magicitems/") index = "magic-items/";
-    if (name !== normalizedString) {
-      index === "sections/" ? (index = "equipment-categories/") : index;
-    } else {
-      index = "equipment/";
-    }
-
-    const newSearchApi = `${apiURL}/api/${index}${normalizedName}`;
-    const searchResult = await fetchApi(newSearchApi);
-    //passer på å ignorere de søkene hvor ingenting er funnet.
-    if (searchResult === "Nothing Found!") return;
-    //Lager nye child elementer til resultScreen basert på søkeresultatene.
-    else {
-      appendResults(searchResult, normalizedString);
-    }
-    if (activeScreen !== resultScreen)
-      setActiveScreen(resultScreen, "search", results);
+  let searchData = item || searchDatabase.data;
+  searchData.forEach((data) => {
+    console.log(data);
+    arraySearch(searchResult, data, normalizedString);
   });
+  console.log(searchResult);
+  //Går gjennom alle resultatene og normaliserer svarene til vår apitype. Noe her kan gjøres bedre. men beste er nok å faktisk skifte API vi bruker på siden.
+
+  //Lager nye child elementer til resultScreen basert på søkeresultatene.
+  if (activeScreen !== resultScreen)
+    setActiveScreen(resultScreen);
+  for (let result of searchResult) {
+    const fetchedData = await fetchApi(apiURL + result.url);
+    appendResults(fetchedData);
+  }
 };
 
-const appendResults = async (searchResult, string = "") => {
+const arraySearch = (mainArray, array, searchString) => {
+  if (array.length === 0) return;
+  let searchArray = array.map((x) => x);
+  let string = searchString;
+  //Find leter etter strings
+  let result = searchArray.find((searchElement) =>
+    searchElement.index?.includes(string)
+  );
+  console.log(result);
+  if (result === undefined) return;
+  else {
+    mainArray.push(result);
+    searchArray.splice(searchArray.indexOf(result), 1, "");
+    return arraySearch(mainArray, searchArray, searchString);
+  }
+};
+
+const appendResults = async (searchResult) => {
   const resultName = makeElements("button", {
     className: "resultName descriptionText darkMode",
     innerText: searchResult.name,
@@ -136,21 +127,11 @@ const appendResults = async (searchResult, string = "") => {
     await setActiveMonster(resultName.value);
     resultName.value.includes("monsters")
       ? (displayMonsterInfo(monsterExample),
-        setActiveScreen(infoCard, "monster", monsterExample))
+        setActiveScreen(infoCard))
       : displaySearchItem(resultName.value);
   });
   searchElements.push(resultName);
   resultScreen.appendChild(resultName);
-  if (searchResult.equipment) {
-    searchResult.equipment.forEach(async (equipment) => {
-      if (!equipment.index.includes(string)) return;
-      else {
-        string = equipment.index;
-        const newSearch = await fetchApi(`${apiURL}/api/equipment/${string}`);
-        await appendResults(newSearch, string);
-      }
-    });
-  }
   if (!searchResult.desc) return;
   if (typeof searchResult.desc === "object") {
     for (let desc of searchResult.desc) {
@@ -284,9 +265,7 @@ const displayMonsterInfo = (monsterExample) => {
   monsterDescription.textContent = `Description ${monsterExample.desc}`;
   cardTextContainer.appendChild(monsterDescription);
 };
-history.replaceState("startPage", "", document.location.href);
-setActiveScreen(startPage, "startPage", "startPage");
-console.log(headerLogo);
+setActiveScreen(startPage);
 headerLogo.addEventListener("click", () =>
-  setActiveScreen(startPage, "startPage", "startPage")
+  setActiveScreen(startPage)
 );
