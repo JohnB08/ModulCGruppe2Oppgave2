@@ -62,10 +62,6 @@ let monsterExample = await fetchApi(monsterUrl);
 
 const searchAPIURL = "https://api.open5e.com/search/?text=";
 
-const test = await fetchApi(
-  apiURL + "/api/equipment-categories/adventuring-gear"
-);
-console.log(test);
 
 /* Søkefunksjoner */
 
