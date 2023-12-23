@@ -62,7 +62,6 @@ let monsterExample = await fetchApi(monsterUrl);
 
 const searchAPIURL = "https://api.open5e.com/search/?text=";
 
-
 /* Søkefunksjoner */
 
 /**
@@ -76,7 +75,9 @@ const searchFunction = async (string, item = null) => {
   searchElements = [];
   let searchResult = [];
   //Mindre nøyaktig søkefunksjon, går via en annen api. gir flere resultater, men mangler mye.
-  const normalizedString = string.toLowerCase();
+  let normalizedString = string.toLowerCase();
+  if (normalizedString.includes(" "))
+    normalizedString = normalizedString.split(" ").join("-");
   let searchData = item || searchDatabase.data;
   searchData.forEach((data) => {
     arraySearch(searchResult, data, normalizedString);
