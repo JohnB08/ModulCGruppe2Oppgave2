@@ -260,7 +260,7 @@ const mobileSubMenuGenerator = (event, category, navBarObject) => {
         displaySearchItem(event.target.value);
       });
       btnId++;
-      btn.style.animationDelay = `${btnId * 25}ms`;
+      btn.style.animationDelay = `${btnId * 10}ms`;
       subMenu.appendChild(btn);
       menuElements.push(subMenu);
     });

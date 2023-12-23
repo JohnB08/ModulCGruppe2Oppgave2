@@ -62,11 +62,6 @@ let monsterExample = await fetchApi(monsterUrl);
 
 const searchAPIURL = "https://api.open5e.com/search/?text=";
 
-const test = await fetchApi(
-  apiURL + "/api/equipment-categories/adventuring-gear"
-);
-console.log(test);
-
 /* Søkefunksjoner */
 
 /**
@@ -80,25 +75,29 @@ const searchFunction = async (string, item = null) => {
   searchElements = [];
   let searchResult = [];
   //Mindre nøyaktig søkefunksjon, går via en annen api. gir flere resultater, men mangler mye.
-  const normalizedString = string.toLowerCase();
+  let normalizedString = string.toLowerCase();
+  if (normalizedString.includes(" "))
+    normalizedString = normalizedString.split(" ").join("-");
   let searchData = item || searchDatabase.data;
   searchData.forEach((data) => {
-    console.log(data);
     arraySearch(searchResult, data, normalizedString);
   });
-  console.log(searchResult);
   //Går gjennom alle resultatene og normaliserer svarene til vår apitype. Noe her kan gjøres bedre. men beste er nok å faktisk skifte API vi bruker på siden.
 
   //Lager nye child elementer til resultScreen basert på søkeresultatene.
-  if (activeScreen !== resultScreen) setActiveScreen(resultScreen);
-  for (let result of searchResult) {
-    const fetchedData = await fetchApi(apiURL + result.url);
-    appendResults(fetchedData);
+  if (!searchResult.length) {
+    appendResults();
+  } else {
+    for (let result of searchResult) {
+      const fetchedData = await fetchApi(apiURL + result.url);
+      appendResults(fetchedData);
+    }
   }
+  if (activeScreen !== resultScreen) setActiveScreen(resultScreen);
 };
 
 const arraySearch = (mainArray, array, searchString) => {
-  if (array.length === 0) return;
+  if (!array.length) return;
   let searchArray = array.map((x) => x);
   let string = searchString;
   //Find leter etter strings
@@ -106,7 +105,7 @@ const arraySearch = (mainArray, array, searchString) => {
     searchElement.index?.includes(string)
   );
   console.log(result);
-  if (result === undefined) return;
+  if (!result) return;
   else {
     mainArray.push(result);
     searchArray.splice(searchArray.indexOf(result), 1, "");
@@ -115,36 +114,45 @@ const arraySearch = (mainArray, array, searchString) => {
 };
 
 const appendResults = async (searchResult) => {
-  const resultName = makeElements("button", {
-    className: "resultName descriptionText darkMode",
-    innerText: searchResult.name,
-    value: searchResult.url,
-  });
-  resultName.addEventListener("click", async () => {
-    await setActiveMonster(resultName.value);
-    resultName.value.includes("monsters")
-      ? (displayMonsterInfo(monsterExample), setActiveScreen(infoCard))
-      : displaySearchItem(resultName.value);
-  });
-  searchElements.push(resultName);
-  resultScreen.appendChild(resultName);
-  if (!searchResult.desc) return;
-  if (typeof searchResult.desc === "object") {
-    for (let desc of searchResult.desc) {
+  if (!searchResult) {
+    const errorMessage = makeElements("h3", {
+      className: "resultName descriptionText darkMode",
+      innerText: "Nothing Found",
+    });
+    searchElements.push(errorMessage);
+    resultScreen.appendChild(errorMessage);
+  } else {
+    const resultName = makeElements("button", {
+      className: "resultName descriptionText darkMode",
+      innerText: searchResult.name,
+      value: searchResult.url,
+    });
+    resultName.addEventListener("click", async () => {
+      await setActiveMonster(resultName.value);
+      resultName.value.includes("monsters")
+        ? (displayMonsterInfo(monsterExample), setActiveScreen(infoCard))
+        : displaySearchItem(resultName.value);
+    });
+    searchElements.push(resultName);
+    resultScreen.appendChild(resultName);
+    if (!searchResult.desc) return;
+    if (typeof searchResult.desc === "object") {
+      for (let desc of searchResult.desc) {
+        const resultDesc = makeElements("p", {
+          className: "resultDesc buttonText darkMode",
+          innerText: desc,
+        });
+        resultScreen.appendChild(resultDesc);
+        searchElements.push(resultDesc);
+      }
+    } else {
       const resultDesc = makeElements("p", {
         className: "resultDesc buttonText darkMode",
-        innerText: desc,
+        innerText: searchResult.desc,
       });
       resultScreen.appendChild(resultDesc);
       searchElements.push(resultDesc);
     }
-  } else {
-    const resultDesc = makeElements("p", {
-      className: "resultDesc buttonText darkMode",
-      innerText: searchResult.desc,
-    });
-    resultScreen.appendChild(resultDesc);
-    searchElements.push(resultDesc);
   }
 };
 
