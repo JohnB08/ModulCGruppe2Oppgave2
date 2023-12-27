@@ -389,3 +389,9 @@ const displayMonsterInfo = (monsterExample) => {
 };
 setActiveScreen(startPage);
 headerLogo.addEventListener("click", () => setActiveScreen(startPage));
+
+//Fetching the monster Api index
+fetch('https://www.dnd5eapi.co/api/monsters')
+  .then(response => response.json())
+  .then(data => console.log(data))
+  .catch(error => console.error('Error:', error));
