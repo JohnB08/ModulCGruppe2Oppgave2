@@ -22,10 +22,19 @@ const displaySearchItem = async (url, item = null) => {
     innerText: itemObject.name,
   });
   itemElements.push(title);
-  itemInfo.appendChild(title);
+  itemInfo.prepend(title);
   parseItemInfo(itemObject);
   setActiveScreen(itemInfo, "info", itemObject);
 };
+
+let itemNameSkipVariants = [
+  "variant",
+  "variants",
+  "url",
+  "index",
+  "option_type",
+  "option_set_type",
+];
 
 /**
  * Tarin et objekt fra displaySearchItem og displayer inforen som står i det.
@@ -34,9 +43,7 @@ const displaySearchItem = async (url, item = null) => {
 const parseItemInfo = (itemObject) => {
   Object.entries(itemObject).forEach((item) => {
     let [itemName, itemValue] = item;
-    if (itemName === "variant" && !itemObject.variant) return;
-    if (itemName === "variants" && !itemObject.variant) return;
-    if (itemName === "url" || itemName === "index") return;
+    if (itemNameSkipVariants.includes(itemName)) return;
     if (itemName === "name") itemName = "";
     if (itemName === "rarity") itemValue = itemObject.rarity.name;
     if (itemName === "desc") itemName = "Description:";
@@ -50,7 +57,7 @@ const parseItemInfo = (itemObject) => {
       itemDesc.innerHTML += `${itemValue}`;
     else if (Array.isArray(itemValue)) {
       itemValue.forEach((value) => {
-        if (typeof value === "string") itemDesc.innerHTML += `<br> ${value}`;
+        if (typeof value === "string") itemDesc.innerHTML += `${value}`;
         else return parseItemInfo(value);
       });
     } else {
