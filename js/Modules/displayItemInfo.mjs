@@ -22,9 +22,9 @@ const displaySearchItem = async (url, item = null) => {
     innerText: itemObject.name,
   });
   itemElements.push(title);
-  itemInfo.prepend(title);
   parseItemInfo(itemObject);
-  setActiveScreen(itemInfo, "info", itemObject);
+  itemInfo.prepend(title);
+  setActiveScreen(itemInfo);
 };
 
 let itemNameSkipVariants = [
