@@ -247,13 +247,20 @@ span {
 .itemInfo {
   grid-area: info;
   display: none;
-  flex-direction: column;
+  flex-direction: column-reverse;
   justify-content: space-between;
-  max-height: 80vh;
   max-width: 1000px;
 }
 .itemDesc span {
   font-weight: bold;
+}
+
+#main-container {
+  display: none;
+  grid-area: info;
+  flex-direction: column-reverse;
+  justify-content: space-between;
+  max-width: 1000px;
 }
 
 @media only screen and (max-width: 600px) {

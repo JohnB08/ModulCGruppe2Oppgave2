@@ -2,6 +2,7 @@ import { fetchApi } from "./fetchApi.mjs";
 import { makeElements } from "./makeElements.mjs";
 import { hamButton } from "./hamburgerSVG.js";
 import { displaySearchItem } from "./displayItemInfo.mjs";
+import { showArray } from "./showMonsters.mjs";
 
 let menuOpen = false;
 let currentTarget = "";
@@ -120,7 +121,9 @@ const desktopButtonDisplay = (navBarObject) => {
       subMenuGenerator(event, category, navBarObject)
     );
     if (btn.innerText === "Monsters") {
-      //sett inn funksjon fra dragonList her
+      btn.addEventListener("click", () =>
+        showArray(allMonstersExample.results)
+      );
     }
     navBtnContainer.appendChild(btn);
   });
