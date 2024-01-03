@@ -255,6 +255,14 @@ span {
   font-weight: bold;
 }
 
+#main-container {
+  display: none;
+  grid-area: info;
+  flex-direction: column-reverse;
+  justify-content: space-between;
+  max-width: 1000px;
+}
+
 @media only screen and (max-width: 600px) {
   body {
     grid-template-areas:

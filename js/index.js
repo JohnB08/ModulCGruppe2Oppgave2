@@ -52,10 +52,6 @@ const apiIndex = "https://www.dnd5eapi.co/api";
 
 const indexExample = await fetchApi(apiIndex);
 
-const allMonstersUrl = "https://www.dnd5eapi.co/api/monsters";
-
-const allMonstersExample = await fetchApi(allMonstersUrl);
-
 const monsterUrl = "https://www.dnd5eapi.co/api/monsters/adult-black-dragon";
 
 let monsterExample = await fetchApi(monsterUrl);
@@ -169,9 +165,8 @@ searchField.addEventListener("keydown", async (event) => {
 });
 
 /* NAVBAR END */
-
 /* dragonList */
-const mainContainer = document.getElementById("main-container");
+/* ;
 const buttonHome = document.getElementById("home-btn");
 const buttonPrev = document.getElementById("previouse-btn");
 const buttonNext = document.getElementById("next-btn");
@@ -198,16 +193,16 @@ async function getDragonList(url) {
 
   displayDragonList(data.results);
   setActiveScreen(mainContainer);
-}
+} */
 
 /* await getDragonList(baseUrl); */
 
-function displayDragonList(dragonList) {
+/* function displayDragonList(dragonList) {
   mainContainer.innerHTML = "";
   dragonList.forEach(async (dragon) => {
-    const dragonDetailData =
-      /* await getDragonDetails(dragon.url); */ await fetchApi(
-        apiURL + dragon.url
+    const dragonDetailData = */
+/* await getDragonDetails(dragon.url); */ /* await fetchApi(
+          apiURL + dragon.url
       );
     console.log(dragonDetailData);
     if (dragonDetailData.image) {
@@ -219,6 +214,45 @@ function displayDragonList(dragonList) {
     dragonNameEl.textContent = dragon.name;
   });
 }
+
+//Fetching the monster Api index
+fetch('https://www.dnd5eapi.co/api/monsters')
+  .then(response => response.json())
+  .then(data => console.log(data))
+  .catch(error => console.error('Error:', error));
+
+  
+  const myObject = {}
+  console.log(myObject)
+
+  let dataArray = []
+
+  for(key in myObject){
+    let entry = []
+    entry.push(key)
+    console.log(key)
+    console.log(myObject[key])
+  }
+
+  for (i=0; i < myObject.length; i++){
+    console.log(myObject[i])
+  }
+
+  const i = 0
+  
+  function next() {
+    if (i >= images.length - 1) {
+        return false;
+    }
+    i++;
+}
+function previous() {
+    if (i <= 0) {
+        return false;
+    }
+    i--;
+} */
+
 //monsterCard image maker
 const cardImage = document.createElement("img");
 
@@ -389,41 +423,3 @@ const displayMonsterInfo = (monsterExample) => {
 };
 setActiveScreen(startPage);
 headerLogo.addEventListener("click", () => setActiveScreen(startPage));
-
-//Fetching the monster Api index
-fetch('https://www.dnd5eapi.co/api/monsters')
-  .then(response => response.json())
-  .then(data => console.log(data))
-  .catch(error => console.error('Error:', error));
-
-  
-  const myObject = {}
-  console.log(myObject)
-
-  let dataArray = []
-
-  for(key in myObject){
-    let entry = []
-    entry.push(key)
-    console.log(key)
-    console.log(myObject[key])
-  }
-
-  for (i=0; i < myObject.length; i++){
-    console.log(myObject[i])
-  }
-
-  const i = 0
-  
-  function next() {
-    if (i >= images.length - 1) {
-        return false;
-    }
-    i++;
-}
-function previous() {
-    if (i <= 0) {
-        return false;
-    }
-    i--;
-}
